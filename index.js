@@ -5,10 +5,15 @@ const path = require('path');
 const pool = require('./database/database');
 
 const FRONTEND_HTML_PATH = path.join(__dirname, '/public/index.html');
+const FRONTEND_PUBLIC_PATH = path.join(__dirname, '/public/');
 
 const app = express();
 
 app.set('port', process.env.PORT || 4000);
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use('/public', express.static(FRONTEND_PUBLIC_PATH));
 
 app.get('/', async (req, res) => {
     res.sendFile(FRONTEND_HTML_PATH);

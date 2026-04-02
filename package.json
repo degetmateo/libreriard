@@ -1,5 +1,5 @@
 {
-  "name": "rd---page",
+  "name": "rdpage",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -7,7 +7,7 @@
     "start": "node index.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "degetmateo",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
