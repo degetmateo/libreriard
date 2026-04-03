@@ -1,5 +1,8 @@
+import NavComponent from "../components/nav.component.js";
+
 export default class BaseView {
     constructor () {
+        this.nav = new NavComponent();
         this.app = document.getElementById('app');
         this.view = document.createElement('div');
         this.view.classList.add('view');
