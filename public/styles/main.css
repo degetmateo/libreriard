@@ -1,6 +1,8 @@
 :root {
     --background-color: #00d9ff;
     --border-color: rgb(0, 116, 140);
+    --button-color: rgb(0, 166, 199);
+    --hover-color: rgb(0, 116, 140);
 }
 
 .app {

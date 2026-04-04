@@ -6,11 +6,12 @@ class NavComponent extends HTMLElement {
     constructor () {
         super();
         this.classList.add('nav');
-        this.innerHTML = navComponentTemplate + navComponentStyle;
-
+        this.innerHTML = navComponentTemplate() + navComponentStyle;
         this.addEventListener('click', (event) => {
-            if (event.target.matches('.nav-button')) {
-                const href = event.target.getAttribute('href');
+            const button = event.target.closest('.nav-button');
+            if (button) {
+                event.preventDefault();
+                const href = button.getAttribute('href');
                 router.navigateTo(href);
             };
         });
