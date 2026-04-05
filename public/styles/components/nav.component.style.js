@@ -27,16 +27,17 @@ export default `
             display:grid;
             grid-template-columns: 20px 1fr;
             grid-template-rows: auto;
-            gap: 10px;
+            gap: 15px;
 
             align-items: center;
 
-            font-size: 20px;
+            font-size: 22px;
             font-weight: bold;
+            text-transform: uppercase;
 
-            border: 4px solid var(--border-color);
-            border-radius: 10px;
-            background-color: var(--button-color);
+            // border: 4px solid var(--border-color);
+            // border-radius: 10px;
+            // background-color: var(--button-color);
 
             width: 200px;
         }
@@ -47,6 +48,59 @@ export default `
 
         .nav-button-cart {
             display: none;
+        }
+
+        @media (max-width: 900px) {
+            .nav {
+                position: absolute;
+                top: unset;
+                left: 0;
+                bottom: 0;
+
+                width: 100%;
+                height: 50px;
+                background-color: var(--background-color);
+
+                z-index: 1;
+                padding: 0;
+            }
+
+            .nav-buttons {
+                border-top: 1px solid var(--border-color);
+
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr;
+                grid-template-rows: 50px;
+
+                width: 100%;
+                height: 50px;
+                gap: 0;
+                padding: 0;
+            }
+
+            .nav-button-cart {
+                display: flex;
+            }
+
+            .nav-button {
+                display: flex;
+                gap: 0;
+                justify-content: center;
+                align-items: center;
+                border: none;
+                background-color: unset;
+                width: auto;
+                height: 50px;
+                border-radius: 0;
+            }
+
+            .nav-button:hover {
+                background-color: none;
+            }
+
+            .nav-button-text {
+                display: none;
+            }
         }
     </style>
 `;

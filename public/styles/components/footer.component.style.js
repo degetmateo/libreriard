@@ -15,5 +15,13 @@ export default `
             background-color: var(--background-color);
             border-top: 1px solid var(--border-color);
         }
+
+        @media (max-width: 900px) {
+            .footer {
+                position: initial;
+                bottom: unset;
+                top: unset;
+            }
+        }
     </style>
 `;
