@@ -14,6 +14,7 @@
     padding: 0;
 
     max-width: 100dvw;
+    min-height: 100dvh;
 
     background-color: var(--background-color);
 }
@@ -42,12 +43,12 @@ h1, h2, h3, h4, h5, h6, p {
 @media (max-width: 900px) {
     .template {
         grid-template-columns: 1fr;
-        grid-template-rows: 100dvh;
+        grid-template-rows: 1fr 50px;
+        grid-template-areas: "main" "nav";
     }
-    
+
     .main {
         border: none;
-        height: calc(100dvh - 50px);
-        overflow-y: scroll;
+        grid-area: main;
     }
 }

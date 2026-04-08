@@ -1,5 +1,7 @@
+import CartView from "./views/cart.view.js";
 import ErrorView from "./views/error.view.js";
 import HomeView from "./views/home.view.js";
+import ProductsView from "./views/products.view.js";
 
 class Router {
     constructor () {
@@ -9,10 +11,14 @@ class Router {
         this.views = {
             error: new ErrorView(),
             home: new HomeView(),
+            products: new ProductsView(),
+            cart: new CartView()
         };
 
         this.router
             .on("/", () => this.views.home.init())
+            .on('/products', () => this.views.products.init())
+            .on('/cart', () => this.views.cart.init())
             // .on("/scanner", () => this.views.scanner.init())
             // .on('/database', () => this.views.database.init())
             // .on('/new-product', () => this.views.productsCreate.init())

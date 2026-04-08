@@ -7,8 +7,7 @@ export default `
         ${HeaderComponent.Render()}
 
         <div class="content">
-            <h3>Main</h3>
-            <p>LOREM IMPSUM</p>
+            <h1>INICIO</h1>
         </div>
 
         ${FooterComponent.Render()}

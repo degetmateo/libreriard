@@ -52,7 +52,9 @@ export default `
 
         @media (max-width: 900px) {
             .nav {
-                position: absolute;
+
+            grid-area: nav;
+                position: fixed;
                 top: unset;
                 left: 0;
                 bottom: 0;
