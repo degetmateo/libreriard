@@ -11,28 +11,35 @@ const FRONTEND_PUBLIC_PATH = path.join(__dirname, '/public/');
 
 const app = express();
 
-const isProduction = process.env.NODE_ENV === 'dev';
-const secureSource = isProduction ? process.env.DEV_URL : process.env.PROD_URL;
+const isDev = process.env.NODE_ENV === 'dev';
+const secureSource = isDev ? process.env.DEV_URL : process.env.PROD_URL;
 
 app.set('port', process.env.PORT);
+
+const connectSrc = ["'self'", secureSource, "https://ka-f.fontawesome.com/"];
+const scriptSrc = ["'self'", "https://kit.fontawesome.com/"]
+
+const directives = {
+    "default-src": [
+        "'none'",
+    ],
+    "connect-src": connectSrc,
+    "script-src": scriptSrc,
+    "img-src": [
+        "'self'"
+    ],
+    "style-src": [
+        "'self'", 
+        "'unsafe-inline'"
+    ],
+};
+
+isDev ? directives["upgrade-insecure-requests"] = null : null;
 
 app.use(
     helmet.contentSecurityPolicy({
         useDefaults: true,
-        directives: {
-            "default-src": [
-                "'none'",
-            ],
-            "connect-src": [
-                "'self'", 
-                secureSource, 
-                "https://ka-f.fontawesome.com/",
-                "chrome-extension:"
-            ],
-            "script-src": ["'self'", "https://kit.fontawesome.com/"],
-            "img-src": ["'self'"],
-            "style-src": ["'self'", "'unsafe-inline'"],
-        },
+        directives: directives,
     })
 );
 
@@ -53,6 +60,6 @@ app.use(async (_, res) => {
 });
 
 
-app.listen(app.get('port'), () => {
+app.listen(app.get('port'), "0.0.0.0", () => {
     console.log(`✅ | Server listening on PORT: ${app.get('port')}`);
 });
