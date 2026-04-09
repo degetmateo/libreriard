@@ -46,12 +46,12 @@ app.use((_, res, next) => {
     next();
 });
 
-app.use((_, res) => {
+app.use(async (_, res) => {
     res.sendFile(FRONTEND_HTML_PATH);
+    const query = await pool.query('SELECT NOW();');
+    console.log(query);
 });
 
-// const query = await pool.query('SELECT NOW();');
-// console.log(query);
 
 app.listen(app.get('port'), () => {
     console.log(`✅ | Server listening on PORT: ${app.get('port')}`);
