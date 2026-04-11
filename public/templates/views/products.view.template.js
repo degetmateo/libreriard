@@ -7,8 +7,17 @@ export default () => {
         <div class="main">
             ${HeaderComponent.Render()}
 
-            <div class="content">
-                <h1>PRODUCTOS</h1>
+            <div class="content content-products">
+            
+                <div class="content-products-input-container">
+                    <input type="text" placeholder="Buscar un producto" class="content-products-input" id="content-products-input" />
+                    <div class="content-products-icon" id="content-products-button-search">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </div>
+                </div>
+
+                <div id="content-products-items-container" class="content-products-items-container"></div>
+
             </div>
 
             ${FooterComponent.Render()}

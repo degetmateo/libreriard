@@ -6,6 +6,8 @@ const helmet = require('helmet');
 
 const pool = require('./database/database');
 
+const productsRouter = require('./routes/products.router.js');
+
 const FRONTEND_HTML_PATH = path.join(__dirname, '/public/index.html');
 const FRONTEND_PUBLIC_PATH = path.join(__dirname, '/public/');
 
@@ -52,6 +54,8 @@ app.use((_, res, next) => {
     res.setHeader('Access-Control-Allow-Credentials', 'true');
     next();
 });
+
+app.use('/api/products', productsRouter);
 
 app.use(async (_, res) => {
     res.sendFile(FRONTEND_HTML_PATH);

@@ -17,7 +17,7 @@ class Router {
 
         this.router
             .on("/", () => this.views.home.init())
-            .on('/products', () => this.views.products.init())
+            .on('/products', (meta) => this.views.products.init(meta))
             .on('/cart', () => this.views.cart.init())
             // .on("/scanner", () => this.views.scanner.init())
             // .on('/database', () => this.views.database.init())

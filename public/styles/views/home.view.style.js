@@ -1,6 +1,6 @@
 export default `
     <style>
-        .home-content {
+        .content-home {
             box-sizing: border-box;
             padding: 10px;
         
@@ -21,16 +21,30 @@ export default `
             color: #000;
         }
         
-        .home-button-container {
+        .content-home-info-container {
+            width: 100%;
+            height:100%;
             display:flex;
-            flex-direction:row;
+            flex-direction: column;
             align-items:center;
-            gap:10px;
-            font-size:20px;
         }
 
-        .home-button-text {
-            font-size:20px;
+        .content-home-info {
+            box-sizing:border-box;
+            padding:10px;
+            border-radius:10px;
+
+            display:flex;
+            flex-direction: column;
+            justify-content:center;
+            gap: 10px;
+
+            // border:1px solid #000;
+        }
+
+        .content-home-info-title {
+            font-size: 20px;
+            font-weight:bold;
         }
 
         .home-button {
@@ -40,10 +54,12 @@ export default `
             display:flex;
             flex-direction:row;
             align-items:center;
+            justify-content:center;
             gap:5px;
 
             border:1px solid #000;
             font-weight: bold;
+            font-size:18px;
             padding: 10px;
             background-color: var(--button-color);
         }
