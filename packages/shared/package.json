@@ -1,0 +1,23 @@
+{
+  "name": "@libreriard/shared",
+  "version": "1.0.0",
+  "private": true,
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "echo \"No tests for shared library\"",
+    "watch": "tsc --watch"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3"
+  }
+}

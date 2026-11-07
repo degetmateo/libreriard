@@ -1,0 +1,22 @@
+{
+  "name": "libreriard-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Librería Rubén Darío - E-commerce and Staff ERP Monorepo",
+  "scripts": {
+    "dev": "pnpm --parallel --filter \"./apps/*\" dev",
+    "dev:api": "pnpm --filter @libreriard/api dev",
+    "dev:staff": "pnpm --filter @libreriard/staff dev",
+    "dev:customer": "pnpm --filter @libreriard/customer dev",
+    "build": "pnpm --filter @libreriard/shared build && pnpm --recursive --filter \"./apps/*\" build",
+    "build:shared": "pnpm --filter @libreriard/shared build",
+    "build:api": "pnpm --filter @libreriard/api build",
+    "build:staff": "pnpm --filter @libreriard/staff build",
+    "build:customer": "pnpm --filter @libreriard/customer build",
+    "start": "pnpm --filter @libreriard/api start",
+    "test": "pnpm --recursive run test"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3"
+  }
+}
