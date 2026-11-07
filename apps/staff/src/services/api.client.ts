@@ -51,7 +51,7 @@ export class ApiClient {
     });
 
     const isAuthRoute = endpoint.includes('/refresh') || endpoint.includes('/login');
-    if ((response.status === 401 || response.status === 403) && !isAuthRoute) {
+    if (response.status === 401 && !isAuthRoute) {
       const refreshed = await this.refreshToken();
       if (refreshed) {
         headers['Authorization'] = `Bearer ${this.accessToken}`;
@@ -61,6 +61,19 @@ export class ApiClient {
     }
 
     return response.json();
+  }
+
+  public async downloadBlob(endpoint: string): Promise<Blob> {
+    const url = `${this.baseUrl}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
+    const headers: Record<string, string> = {};
+    if (this.accessToken) {
+      headers['Authorization'] = `Bearer ${this.accessToken}`;
+    }
+    const response = await fetch(url, { headers, credentials: 'include' });
+    if (!response.ok) {
+      throw new Error('Error al descargar archivo.');
+    }
+    return response.blob();
   }
 
   private async refreshToken(): Promise<boolean> {

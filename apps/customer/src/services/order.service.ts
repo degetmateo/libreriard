@@ -11,8 +11,17 @@ export class OrderService {
     });
   }
 
-  public async getMyOrders(): Promise<ApiResponse<OrderDto[]>> {
-    return this.client.request<OrderDto[]>('/orders');
+  public async getMyOrders(params?: Record<string, string | number>): Promise<ApiResponse<OrderDto[]>> {
+    let query = '';
+    if (params) {
+      const q = new URLSearchParams();
+      Object.entries(params).forEach(([k, v]) => {
+        if (v !== undefined && v !== '') q.append(k, String(v));
+      });
+      const qs = q.toString();
+      if (qs) query = `?${qs}`;
+    }
+    return this.client.request<OrderDto[]>(`/orders${query}`);
   }
 
   public async uploadReceipt(file: File): Promise<ApiResponse<{ url: string; publicId: string }>> {

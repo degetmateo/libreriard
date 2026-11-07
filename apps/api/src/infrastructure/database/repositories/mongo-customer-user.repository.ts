@@ -53,8 +53,14 @@ export class MongoCustomerUserRepository implements ICustomerUserRepository {
     const limit = params.limit || 20;
     const skip = (page - 1) * limit;
 
+    const sortField = params.sortBy === 'name' ? 'name'
+      : params.sortBy === 'email' ? 'email'
+      : params.sortBy === 'cuitCuil' ? 'cuitCuil'
+      : 'createdAt';
+    const sortDir = params.sortOrder === 'asc' ? 1 : -1;
+
     const [docs, total] = await Promise.all([
-      this.collection.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit).toArray(),
+      this.collection.find(filter).sort({ [sortField]: sortDir }).skip(skip).limit(limit).toArray(),
       this.collection.countDocuments(filter)
     ]);
 

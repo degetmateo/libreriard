@@ -45,8 +45,14 @@ export class MongoOrderRepository implements IOrderRepository {
     const limit = params.limit || 20;
     const skip = (page - 1) * limit;
 
+    const sortField = params.sortBy === 'total' ? 'total'
+      : params.sortBy === 'orderNumber' ? 'orderNumber'
+      : params.sortBy === 'status' ? 'status'
+      : 'createdAt';
+    const sortDir = params.sortOrder === 'asc' ? 1 : -1;
+
     const [docs, total] = await Promise.all([
-      this.collection.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit).toArray(),
+      this.collection.find(filter).sort({ [sortField]: sortDir }).skip(skip).limit(limit).toArray(),
       this.collection.countDocuments(filter)
     ]);
 

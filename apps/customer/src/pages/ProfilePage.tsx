@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { OrderDto, OrderItemDto } from '@libreriard/shared';
 import { OrderService } from '../services/order.service';
 import { WholesaleRequestBox } from '../components/profile/WholesaleRequestBox';
+import { Pagination } from '../components/common/Pagination';
 import { User, ShoppingBag, Tag } from 'lucide-react';
 
 const ORDER_STATUS_LABELS: Record<string, string> = {
@@ -20,16 +21,24 @@ export const ProfilePage: React.FC = () => {
   const navigate = useNavigate();
   const [orders, setOrders] = useState<OrderDto[]>([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
 
   useEffect(() => {
     if (!user) {
       navigate('/login');
       return;
     }
-    new OrderService().getMyOrders().then((res) => {
-      if (res.success && res.data) setOrders(res.data);
+    setLoading(true);
+    new OrderService().getMyOrders({ page, limit: 10 }).then((res) => {
+      if (res.success && res.data) {
+        setOrders(res.data);
+        if (res.total !== undefined) setTotalItems(res.total);
+        if (res.totalPages !== undefined) setTotalPages(res.totalPages);
+      }
     }).finally(() => setLoading(false));
-  }, [user]);
+  }, [user, page]);
 
   if (!user) return null;
 
@@ -91,6 +100,14 @@ export const ProfilePage: React.FC = () => {
             })}
           </div>
         )}
+
+        <Pagination
+          currentPage={page}
+          totalPages={totalPages}
+          totalItems={totalItems}
+          pageSize={10}
+          onPageChange={setPage}
+        />
       </div>
     </div>
   );

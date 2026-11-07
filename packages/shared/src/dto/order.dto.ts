@@ -31,6 +31,8 @@ export interface OrderDto {
   subtotal: number;
   discount: number;
   total: number;
+  advancePayment?: number;
+  remainingBalance?: number;
   paymentMethod: PaymentMethod;
   deliveryMethod: DeliveryMethod;
   deliveryAddress?: string;
@@ -55,6 +57,37 @@ export interface CreateOrderDto {
   deliveryAddress?: string;
   transferReceiptUrl?: string;
   transferReceiptName?: string;
+  notes?: string;
+}
+
+export interface CreateManualOrderItemInput {
+  productId?: string;
+  productName: string;
+  subTypeId?: string;
+  quantity: number;
+  unitPrice: number;
+  originalUnitPrice?: number;
+  discountApplied?: boolean;
+  addToDb?: boolean;
+  updatePriceInDb?: boolean;
+}
+
+export interface CreateManualOrderDto {
+  orderType: OrderType;
+  items: CreateManualOrderItemInput[];
+  customer?: {
+    customerId?: string;
+    name?: string;
+    cuitCuil?: string;
+    email?: string;
+    phone?: string;
+    address?: string;
+    postalCode?: string;
+  };
+  advancePayment?: number;
+  paymentMethod: PaymentMethod;
+  deliveryMethod: DeliveryMethod;
+  deliveryAddress?: string;
   notes?: string;
 }
 

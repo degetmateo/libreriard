@@ -4,9 +4,13 @@ import { ProductMapper } from '../../infrastructure/database/mappers/product.map
 import { UUIDv7 } from '../../domain/value-objects/uuid-v7.vo';
 import { Money } from '../../domain/value-objects/money.vo';
 import { CreateProductDto, UpdateProductDto, ProductDto } from '@libreriard/shared';
+import { PriceHistoryService } from './price-history.service';
 
 export class ProductService {
-  constructor(private readonly productRepo: IProductRepository) {}
+  constructor(
+    private readonly productRepo: IProductRepository,
+    private readonly priceHistoryService?: PriceHistoryService
+  ) {}
 
   public async getProducts(params: ProductFilterParams): Promise<{ items: ProductDto[]; total: number }> {
     const result = await this.productRepo.findMany(params);
@@ -29,7 +33,12 @@ export class ProductService {
     return ProductMapper.toDto(product);
   }
 
-  public async updateProduct(idStr: string, dto: UpdateProductDto): Promise<ProductDto> {
+  public async updateProduct(
+    idStr: string,
+    dto: UpdateProductDto,
+    author?: { id: string; name: string; email: string },
+    source = 'MANUAL_EDIT'
+  ): Promise<ProductDto> {
     const product = await this.productRepo.findById(UUIDv7.fromString(idStr));
     if (!product) throw new Error('Producto no encontrado.');
 
@@ -37,6 +46,36 @@ export class ProductService {
       const existing = await this.productRepo.findByBarcode(dto.barcode.trim());
       if (existing && !existing.id.equals(product.id)) {
         throw new Error(`Ya existe otro producto con el código de barras: ${dto.barcode}`);
+      }
+    }
+
+    const oldRetail = product.retailPrice?.getAmount() ?? null;
+    const oldWholesale = product.wholesalePrice?.getAmount() ?? null;
+    const newRetail = dto.retailPrice !== undefined ? (dto.retailPrice === null ? null : Number(dto.retailPrice)) : oldRetail;
+    const newWholesale = dto.wholesalePrice !== undefined ? (dto.wholesalePrice === null ? null : Number(dto.wholesalePrice)) : oldWholesale;
+
+    if (this.priceHistoryService) {
+      if (dto.retailPrice !== undefined && newRetail !== oldRetail) {
+        await this.priceHistoryService.recordChange({
+          productId: product.id,
+          productName: dto.name || product.name,
+          priceType: 'RETAIL',
+          oldPrice: oldRetail,
+          newPrice: newRetail,
+          changedBy: author,
+          source
+        });
+      }
+      if (dto.wholesalePrice !== undefined && newWholesale !== oldWholesale) {
+        await this.priceHistoryService.recordChange({
+          productId: product.id,
+          productName: dto.name || product.name,
+          priceType: 'WHOLESALE',
+          oldPrice: oldWholesale,
+          newPrice: newWholesale,
+          changedBy: author,
+          source
+        });
       }
     }
 

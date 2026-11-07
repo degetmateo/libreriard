@@ -8,6 +8,8 @@ export interface OrderFilterParams {
   status?: OrderStatus;
   orderType?: OrderType;
   search?: string;
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
   page?: number;
   limit?: number;
 }

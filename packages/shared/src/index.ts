@@ -6,4 +6,6 @@ export * from './dto/product.dto';
 export * from './dto/order.dto';
 export * from './dto/settings.dto';
 export * from './dto/audit-log.dto';
+export * from './dto/price-history.dto';
+export * from './dto/statistics.dto';
 

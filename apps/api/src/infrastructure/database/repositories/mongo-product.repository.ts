@@ -48,8 +48,15 @@ export class MongoProductRepository implements IProductRepository {
     const limit = params.limit || 24;
     const skip = (page - 1) * limit;
 
+    const sortField = params.sortBy === 'name' ? 'name'
+      : params.sortBy === 'retailPrice' ? 'retailPrice'
+      : params.sortBy === 'wholesalePrice' ? 'wholesalePrice'
+      : params.sortBy === 'updatedAt' ? 'updatedAt'
+      : 'createdAt';
+    const sortDir = params.sortOrder === 'asc' ? 1 : -1;
+
     const [docs, total] = await Promise.all([
-      this.collection.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit).toArray(),
+      this.collection.find(filter).sort({ [sortField]: sortDir }).skip(skip).limit(limit).toArray(),
       this.collection.countDocuments(filter)
     ]);
 
@@ -66,6 +73,21 @@ export class MongoProductRepository implements IProductRepository {
       { $set: doc },
       { upsert: true }
     );
+  }
+
+  public async saveMany(products: Product[]): Promise<void> {
+    if (products.length === 0) return;
+    const ops = products.map((p) => {
+      const doc = ProductMapper.toPersistence(p);
+      return {
+        updateOne: {
+          filter: { _id: doc._id },
+          update: { $set: doc },
+          upsert: true
+        }
+      };
+    });
+    await this.collection.bulkWrite(ops);
   }
 
   public async delete(id: UUIDv7): Promise<void> {

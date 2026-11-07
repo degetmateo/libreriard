@@ -7,6 +7,8 @@ export interface ProductFilterParams {
   tag?: string;
   barcode?: string;
   isActive?: boolean;
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
   page?: number;
   limit?: number;
 }
@@ -16,6 +18,7 @@ export interface IProductRepository {
   findByBarcode(barcode: string): Promise<Product | null>;
   findMany(params: ProductFilterParams): Promise<{ items: Product[]; total: number }>;
   save(product: Product): Promise<void>;
+  saveMany(products: Product[]): Promise<void>;
   delete(id: UUIDv7): Promise<void>;
 }
 

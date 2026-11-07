@@ -13,6 +13,8 @@ export interface OrderProps {
   subtotal: Money;
   discount?: Money;
   total: Money;
+  advancePayment?: Money;
+  remainingBalance?: Money;
   paymentMethod: PaymentMethod;
   deliveryMethod: DeliveryMethod;
   deliveryAddress?: string;
@@ -34,6 +36,8 @@ export class Order {
   private readonly _subtotal: Money;
   private readonly _discount: Money;
   private readonly _total: Money;
+  private readonly _advancePayment: Money;
+  private readonly _remainingBalance: Money;
   private readonly _paymentMethod: PaymentMethod;
   private readonly _deliveryMethod: DeliveryMethod;
   private readonly _deliveryAddress?: string;
@@ -54,6 +58,8 @@ export class Order {
     this._subtotal = p.subtotal;
     this._discount = p.discount || Money.zero();
     this._total = p.total;
+    this._advancePayment = p.advancePayment || Money.zero();
+    this._remainingBalance = p.remainingBalance || Money.from(Math.max(0, p.total.getAmount() - (p.advancePayment?.getAmount() || 0)));
     this._paymentMethod = p.paymentMethod;
     this._deliveryMethod = p.deliveryMethod;
     this._deliveryAddress = p.deliveryAddress;
@@ -74,6 +80,8 @@ export class Order {
   public get subtotal(): Money { return this._subtotal; }
   public get discount(): Money { return this._discount; }
   public get total(): Money { return this._total; }
+  public get advancePayment(): Money { return this._advancePayment; }
+  public get remainingBalance(): Money { return this._remainingBalance; }
   public get paymentMethod(): PaymentMethod { return this._paymentMethod; }
   public get deliveryMethod(): DeliveryMethod { return this._deliveryMethod; }
   public get deliveryAddress(): string | undefined { return this._deliveryAddress; }

@@ -5,6 +5,8 @@ import { Email } from '../value-objects/email.vo';
 export interface CustomerFilterParams {
   search?: string;
   wholesalePendingOnly?: boolean;
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
   page?: number;
   limit?: number;
 }

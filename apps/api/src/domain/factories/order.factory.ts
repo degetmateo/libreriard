@@ -9,11 +9,13 @@ export interface CreateOrderParams {
   customerSnapshot: CustomerSnapshotDto;
   orderType: OrderType;
   items: OrderItemDto[];
+  advancePayment?: number;
   paymentMethod: PaymentMethod;
   deliveryMethod: DeliveryMethod;
   deliveryAddress?: string;
   transferReceiptUrl?: string;
   transferReceiptName?: string;
+  status?: OrderStatus;
   notes?: string;
 }
 
@@ -23,6 +25,8 @@ export class OrderFactory {
     const subtotal = Money.from(subtotalNum);
     const discount = Money.zero();
     const total = subtotal;
+    const advance = Money.from(p.advancePayment || 0);
+    const remaining = Money.from(Math.max(0, total.getAmount() - advance.getAmount()));
 
     return new Order({
       id: UUIDv7.generate(),
@@ -34,12 +38,14 @@ export class OrderFactory {
       subtotal,
       discount,
       total,
+      advancePayment: advance,
+      remainingBalance: remaining,
       paymentMethod: p.paymentMethod,
       deliveryMethod: p.deliveryMethod,
       deliveryAddress: p.deliveryAddress,
       transferReceiptUrl: p.transferReceiptUrl,
       transferReceiptName: p.transferReceiptName,
-      status: OrderStatus.PENDING,
+      status: p.status || OrderStatus.PENDING,
       notes: p.notes,
       createdAt: new Date(),
       updatedAt: new Date()

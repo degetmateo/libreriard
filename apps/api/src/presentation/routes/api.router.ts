@@ -5,6 +5,7 @@ import { MongoProductRepository } from '../../infrastructure/database/repositori
 import { MongoOrderRepository } from '../../infrastructure/database/repositories/mongo-order.repository';
 import { MongoAuditLogRepository } from '../../infrastructure/database/repositories/mongo-audit-log.repository';
 import { MongoSystemSettingsRepository } from '../../infrastructure/database/repositories/mongo-system-settings.repository';
+import { MongoPriceHistoryRepository } from '../../infrastructure/database/repositories/mongo-price-history.repository';
 import { BcryptPasswordHasher } from '../../infrastructure/security/bcrypt-password-hasher';
 import { JwtTokenProvider } from '../../infrastructure/security/jwt-token-provider';
 import { ResendEmailService } from '../../infrastructure/email/resend-email-service';
@@ -16,7 +17,11 @@ import { TokenService } from '../../application/services/token.service';
 import { StaffManagementService } from '../../application/services/staff-management.service';
 import { CustomerManagementService } from '../../application/services/customer-management.service';
 import { ProductService } from '../../application/services/product.service';
+import { ProductExcelService } from '../../application/services/product-excel.service';
+import { PriceHistoryService } from '../../application/services/price-history.service';
+import { BusinessStatisticsService } from '../../application/services/business-statistics.service';
 import { OrderService } from '../../application/services/order.service';
+import { ManualOrderService } from '../../application/services/manual-order.service';
 import { SystemSettingsService } from '../../application/services/system-settings.service';
 import { AuthMiddleware } from '../middlewares/auth.middleware';
 import { StaffAuthController } from '../controllers/staff-auth.controller';
@@ -49,6 +54,7 @@ export class ApiRouter {
     const orderRepo = new MongoOrderRepository();
     const auditLogRepo = new MongoAuditLogRepository();
     const settingsRepo = new MongoSystemSettingsRepository();
+    const priceHistoryRepo = new MongoPriceHistoryRepository();
 
     // Infrastructure services
     const passwordHasher = new BcryptPasswordHasher();
@@ -64,8 +70,12 @@ export class ApiRouter {
     const tokenService = new TokenService(tokenProvider, staffRepo, customerRepo);
     const staffService = new StaffManagementService(staffRepo, passwordHasher);
     const customerService = new CustomerManagementService(customerRepo, emailService, passwordHasher);
-    const productService = new ProductService(productRepo);
+    const priceHistoryService = new PriceHistoryService(priceHistoryRepo);
+    const productService = new ProductService(productRepo, priceHistoryService);
+    const productExcelService = new ProductExcelService(productRepo, priceHistoryService);
     const orderService = new OrderService(orderRepo, productRepo, customerRepo, settingsRepo, emailService);
+    const manualOrderService = new ManualOrderService(orderRepo, productRepo, customerRepo, priceHistoryService);
+    const statisticsService = new BusinessStatisticsService(orderRepo, productRepo, customerRepo);
     const settingsService = new SystemSettingsService(settingsRepo);
 
     // Controllers
@@ -73,8 +83,8 @@ export class ApiRouter {
     const customerAuthController = new CustomerAuthController(authCustomerService, tokenService, auditLogService);
     const staffController = new StaffController(staffService, auditLogService);
     const customerController = new CustomerController(customerService, auditLogService);
-    const productController = new ProductController(productService, auditLogService);
-    const orderController = new OrderController(orderService, auditLogService);
+    const productController = new ProductController(productService, productExcelService, auditLogService, priceHistoryService);
+    const orderController = new OrderController(orderService, manualOrderService, auditLogService, statisticsService);
     const auditLogController = new AuditLogController(auditLogService);
     const settingsController = new SettingsController(settingsService, auditLogService);
     const uploadController = new UploadController(storageService);

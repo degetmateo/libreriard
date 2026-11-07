@@ -1,39 +1,104 @@
 import React, { useEffect, useState } from 'react';
 import { ProductDto } from '@libreriard/shared';
 import { CatalogService } from '../services/catalog.service';
+import { useAuth } from '../context/AuthContext';
 import { ProductCard } from '../components/catalog/ProductCard';
 import { ProductDetailModal } from '../components/catalog/ProductDetailModal';
-import { Search } from 'lucide-react';
+import { Pagination } from '../components/common/Pagination';
+import { Search, Download, ArrowUpDown } from 'lucide-react';
 
 export const HomePage: React.FC = () => {
+  const { user, isWholesale } = useAuth();
   const [products, setProducts] = useState<ProductDto[]>([]);
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('');
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+  const [sortOption, setSortOption] = useState('newest');
+  const [downloading, setDownloading] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<ProductDto | null>(null);
   const [loading, setLoading] = useState(true);
   const catalogService = new CatalogService();
 
   const categories = ['Todas', 'Escolar', 'Comercial', 'Artística', 'Cuadernos', 'Escritura', 'Papelería'];
 
+  const getSortParams = () => {
+    switch (sortOption) {
+      case 'priceAsc':
+        return { sortBy: isWholesale ? 'wholesalePrice' : 'retailPrice', sortOrder: 'asc' };
+      case 'priceDesc':
+        return { sortBy: isWholesale ? 'wholesalePrice' : 'retailPrice', sortOrder: 'desc' };
+      case 'nameAsc':
+        return { sortBy: 'name', sortOrder: 'asc' };
+      case 'nameDesc':
+        return { sortBy: 'name', sortOrder: 'desc' };
+      default:
+        return { sortBy: 'createdAt', sortOrder: 'desc' };
+    }
+  };
+
   useEffect(() => {
     setLoading(true);
-    const params: Record<string, string> = { limit: '48' };
-    if (search) params.search = search;
+    const { sortBy, sortOrder } = getSortParams();
+    const params: Record<string, string | number> = {
+      page,
+      limit: 20,
+      sortBy,
+      sortOrder
+    };
+    if (search.trim()) params.search = search.trim();
     if (category && category !== 'Todas') params.category = category;
 
-    catalogService.getProducts(params).then(res => {
-      if (res.success && res.data) setProducts(res.data);
-    }).finally(() => setLoading(false));
-  }, [search, category]);
+    catalogService
+      .getProducts(params)
+      .then((res) => {
+        if (res.success && res.data) {
+          setProducts(res.data);
+          setTotalItems(res.total || res.data.length);
+          setTotalPages(res.totalPages || Math.ceil((res.total || res.data.length) / 20) || 1);
+        }
+      })
+      .finally(() => setLoading(false));
+  }, [search, category, page, sortOption]);
+
+  const handleDownloadPriceList = async () => {
+    setDownloading(true);
+    try {
+      const blob = await catalogService.downloadPriceList();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `lista-precios-${isWholesale ? 'mayorista' : 'minorista'}-ruben-dario.xlsx`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+    } catch {
+      alert('Error al descargar la lista de precios. Asegúrate de haber iniciado sesión.');
+    } finally {
+      setDownloading(false);
+    }
+  };
 
   return (
     <div className="space-y-8">
       {/* Hero Banner */}
       <div className="bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 rounded-3xl p-6 sm:p-10 text-white relative overflow-hidden border border-slate-800 shadow-xl">
         <div className="relative z-10 max-w-2xl">
-          <span className="inline-block px-3 py-1 bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 rounded-full text-xs font-bold mb-3">
-            Ventas Minoristas y Mayoristas
-          </span>
+          <div className="flex flex-wrap items-center gap-2 mb-3">
+            <span className="inline-block px-3 py-1 bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 rounded-full text-xs font-bold">
+              Ventas Minoristas y Mayoristas
+            </span>
+            {user && (
+              <button
+                onClick={handleDownloadPriceList}
+                disabled={downloading}
+                className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 rounded-full text-xs font-bold transition shadow-sm"
+              >
+                <Download size={13} />
+                <span>{downloading ? 'Descargando...' : `Descargar Lista ${isWholesale ? 'Mayorista' : 'Minorista'} (.xlsx)`}</span>
+              </button>
+            )}
+          </div>
           <h1 className="text-3xl sm:text-5xl font-black tracking-tight leading-tight mb-3">
             Librería <span className="text-cyan-400">Rubén Darío</span>
           </h1>
@@ -46,29 +111,61 @@ export const HomePage: React.FC = () => {
               type="text"
               placeholder="Buscar productos, marcas, códigos..."
               value={search}
-              onChange={e => setSearch(e.target.value)}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setPage(1);
+              }}
               className="w-full pl-10 pr-4 py-3 bg-slate-800/90 border border-slate-700 rounded-xl text-white placeholder-slate-400 text-sm focus:outline-none focus:border-cyan-400 shadow-inner"
             />
           </div>
         </div>
-        <img src="/logo.png" alt="Librería Rubén Darío" className="absolute -right-8 -bottom-8 w-64 h-64 object-contain opacity-20 pointer-events-none" />
+        <img
+          src="/logo.png"
+          alt="Librería Rubén Darío"
+          className="absolute -right-8 -bottom-8 w-64 h-64 object-contain opacity-20 pointer-events-none"
+        />
       </div>
 
-      {/* Category Pills */}
-      <div className="flex items-center space-x-2 overflow-x-auto pb-2">
-        {categories.map(cat => (
-          <button
-            key={cat}
-            onClick={() => setCategory(cat)}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap ${
-              (category === cat || (!category && cat === 'Todas'))
-                ? 'bg-slate-900 text-cyan-400 border border-cyan-500/40 shadow-sm'
-                : 'bg-white text-slate-600 border border-slate-200 hover:border-slate-300'
-            }`}
+      {/* Filter and Sort Bar */}
+      <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
+        {/* Category Pills */}
+        <div className="flex items-center space-x-2 overflow-x-auto pb-2 flex-1">
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => {
+                setCategory(cat);
+                setPage(1);
+              }}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap ${
+                category === cat || (!category && cat === 'Todas')
+                  ? 'bg-slate-900 text-cyan-400 border border-cyan-500/40 shadow-sm'
+                  : 'bg-white text-slate-600 border border-slate-200 hover:border-slate-300'
+              }`}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+
+        {/* Sort Selector */}
+        <div className="flex items-center gap-2 text-xs">
+          <ArrowUpDown size={14} className="text-slate-400" />
+          <select
+            value={sortOption}
+            onChange={(e) => {
+              setSortOption(e.target.value);
+              setPage(1);
+            }}
+            className="bg-white border border-slate-200 rounded-xl px-3 py-2 text-slate-700 font-semibold focus:outline-none focus:border-cyan-400 shadow-sm"
           >
-            {cat}
-          </button>
-        ))}
+            <option value="newest">Más recientes</option>
+            <option value="priceAsc">Menor precio</option>
+            <option value="priceDesc">Mayor precio</option>
+            <option value="nameAsc">Nombre (A - Z)</option>
+            <option value="nameDesc">Nombre (Z - A)</option>
+          </select>
+        </div>
       </div>
 
       {/* Products Grid */}
@@ -80,10 +177,21 @@ export const HomePage: React.FC = () => {
             No se encontraron productos en esta categoría o búsqueda.
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-            {products.map(product => (
-              <ProductCard key={product.id} product={product} onOpenDetails={setSelectedProduct} />
-            ))}
+          <div className="space-y-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+              {products.map((product) => (
+                <ProductCard key={product.id} product={product} onOpenDetails={setSelectedProduct} />
+              ))}
+            </div>
+
+            {/* Pagination */}
+            <Pagination
+              currentPage={page}
+              totalPages={totalPages}
+              totalItems={totalItems}
+              pageSize={20}
+              onPageChange={setPage}
+            />
           </div>
         )}
       </div>
@@ -96,4 +204,3 @@ export const HomePage: React.FC = () => {
     </div>
   );
 };
-

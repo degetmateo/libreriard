@@ -6,6 +6,8 @@ import { LoginPage } from './pages/LoginPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { ProductsPage } from './pages/ProductsPage';
 import { OrdersPage } from './pages/OrdersPage';
+import { ManualOrderPage } from './pages/ManualOrderPage';
+import { StatisticsPage } from './pages/StatisticsPage';
 import { CustomersPage } from './pages/CustomersPage';
 import { StaffPage } from './pages/StaffPage';
 import { SettingsPage } from './pages/SettingsPage';
@@ -27,6 +29,8 @@ export const App: React.FC = () => {
         <Route index element={<DashboardPage />} />
         <Route path="products" element={<ProductsPage />} />
         <Route path="orders" element={<OrdersPage />} />
+        <Route path="orders/create" element={<ManualOrderPage />} />
+        <Route path="statistics" element={<StatisticsPage />} />
         <Route path="customers" element={<CustomersPage />} />
         <Route path="staff" element={<ProtectedRoute adminOnly><StaffPage /></ProtectedRoute>} />
         <Route path="settings" element={<ProtectedRoute adminOnly><SettingsPage /></ProtectedRoute>} />

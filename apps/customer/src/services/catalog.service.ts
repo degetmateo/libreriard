@@ -20,5 +20,9 @@ export class CatalogService {
   public async getBankDetails(): Promise<ApiResponse<SystemSettingsDto>> {
     return this.getSettings();
   }
+
+  public async downloadPriceList(): Promise<Blob> {
+    return this.client.downloadBlob('/products/price-list/excel');
+  }
 }
 

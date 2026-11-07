@@ -1,5 +1,5 @@
 import { ApiClient } from './api.client';
-import { ApiResponse, ProductDto, CreateProductDto, UpdateProductDto } from '@libreriard/shared';
+import { ApiResponse, ProductDto, CreateProductDto, UpdateProductDto, PriceHistoryDto } from '@libreriard/shared';
 
 export class ProductService {
   private readonly client = ApiClient.getInstance();
@@ -50,5 +50,41 @@ export class ProductService {
     return this.client.request<void>(`/upload/image/${encodeURIComponent(publicId)}`, {
       method: 'DELETE'
     });
+  }
+
+  public async exportExcel(): Promise<Blob> {
+    return this.client.downloadBlob('/products/export/excel');
+  }
+
+  public async importExcel(file: File): Promise<ApiResponse<{ total: number; created: number; updated: number; errors: string[] }>> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.client.request('/products/import/excel', {
+      method: 'POST',
+      body: formData
+    });
+  }
+
+  public async importMassive(fileOrData: File | any[]): Promise<ApiResponse<{ total: number; inserted: number; updated: number; errors: string[] }>> {
+    if (fileOrData instanceof File) {
+      const formData = new FormData();
+      formData.append('file', fileOrData);
+      return this.client.request('/products/import/massive', {
+        method: 'POST',
+        body: formData
+      });
+    }
+    return this.client.request('/products/import/massive', {
+      method: 'POST',
+      body: JSON.stringify({ products: fileOrData })
+    });
+  }
+
+  public async getProductPriceHistory(productId: string, page = 1, limit = 20): Promise<ApiResponse<PriceHistoryDto[]>> {
+    return this.client.request<PriceHistoryDto[]>(`/products/${productId}/price-history?page=${page}&limit=${limit}`);
+  }
+
+  public async getAllPriceHistory(page = 1, limit = 20): Promise<ApiResponse<PriceHistoryDto[]>> {
+    return this.client.request<PriceHistoryDto[]>(`/products/price-history?page=${page}&limit=${limit}`);
   }
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Package, ShoppingCart, Users, UserCheck, Sliders, ShieldAlert, LogOut } from 'lucide-react';
+import { LayoutDashboard, Package, ShoppingCart, Users, UserCheck, Sliders, ShieldAlert, LogOut, BarChart3 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 interface SidebarProps {
@@ -15,6 +15,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
     { to: '/', label: 'Panel Principal', icon: LayoutDashboard },
     { to: '/products', label: 'Productos', icon: Package },
     { to: '/orders', label: 'Órdenes', icon: ShoppingCart },
+    { to: '/statistics', label: 'Estadísticas', icon: BarChart3 },
     { to: '/customers', label: 'Clientes', icon: Users },
     ...(isAdmin ? [
       { to: '/staff', label: 'Gestión de Staff', icon: UserCheck },

@@ -4,9 +4,9 @@ import { Money } from '../value-objects/money.vo';
 import { CreateProductDto } from '@libreriard/shared';
 
 export class ProductFactory {
-  public static create(dto: CreateProductDto): Product {
+  public static create(dto: CreateProductDto & { id?: UUIDv7 }): Product {
     return new Product({
-      id: UUIDv7.generate(),
+      id: dto.id || UUIDv7.generate(),
       name: dto.name.trim(),
       description: dto.description?.trim() || '',
       barcode: dto.barcode?.trim() || undefined,

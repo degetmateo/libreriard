@@ -253,12 +253,105 @@ Configurable by Administrator in staff panel:
 - Responsive sidebar navigation (collapsible on mobile).
 - Subroutes (in English):
   - `/`: Panel Principal (Dashboard)
-  - `/products`: Catálogo de Productos y Editor (con escalas minoristas por cantidad y eliminación de fotos sincronizada)
+  - `/products`: Catálogo de Productos y Editor (con escalas minoristas por cantidad, importación/exportación Excel y carga masiva)
   - `/orders`: Gestión de Órdenes (con estados, tipos y métodos de pago en español)
+  - `/orders/create`: Creación Manual de Órdenes con tabla tipo Excel interactiva, autocompletado predictivo, lector de código de barras, guardado de productos/precios en BD y comprobante imprimible/exportable.
   - `/customers`: Gestión de Clientes (con edición, reseteo de claves y activación/desactivación)
   - `/staff`: Gestión de Personal Staff (Admin only)
   - `/settings`: Configuración (Admin only - Datos bancarios, Ubicación/Contacto y Textos Legales)
   - `/audit-logs`: Auditoría y Logs del Sistema (Admin only)
+
+---
+
+## 9. Manual Order Creation & Receipts (`/orders/create`)
+
+1. **Excel-Like Dynamic Table**:
+   - Inline product search with popup autocomplete matches by name.
+   - Allows typing any custom product name even if not found in database.
+   - Quantity and unit price editable in real-time.
+   - `addToDb` ("Guardar nuevo en BD") flag to automatically register nonexistent products into the database.
+   - `updatePriceInDb` ("Actualizar precio en BD") flag to persist modified unit prices back to the catalog (affecting retail or wholesale price according to the active order type).
+   - Retail tier discount auto-detection (`retailPriceTiers`): if staff sets a custom price on a tiered item with `updatePriceInDb`, the tier unit price is saved in the DB.
+   - Dedicated Barcode Scanner input: typing or scanning a barcode and pressing `Enter` instantly resolves the product and inserts the row.
+   - Keyboard navigation: `Tab` traverses fields; `Enter` creates and focuses a new item row.
+2. **Advance Payments & Customer Snapshot**:
+   - Order type toggle: Minorista (default) or Mayorista.
+   - Optional customer details with default fallback to "Consumidor Final".
+   - `advancePayment` (Adelanto del cliente) input with automatic `remainingBalance` (saldo restante a pagar) computation: $\text{Saldo} = \text{Total} - \text{Adelanto}$.
+3. **Order Receipt Modal (`OrderReceiptModal`)**:
+   - Clean receipt modal with official store logo, store header "Librería Rubén Darío", real store address from database ("Montevideo 949, B1617 Gral. Pacheco, Provincia de Buenos Aires"), WhatsApp/phone contact (`+54 9 11 3884-6058`), email (`libreriard@yahoo.com.ar`), item breakdown, totals, advance payment, remaining balance, and small bank transfer details box (Banco Credicoop, CBU, Alias).
+   - Centered order type badge (VENTA MINORISTA / VENTA MAYORISTA).
+   - Tighter, paper-saving layout design for eco-friendly printing and compact single-page exports.
+   - Comprehensive legal disclaimer: *"Este documento no es válido como factura. Los precios cotizados se mantienen vigentes por 5 días hábiles a partir de la fecha de emisión. Pedidos se realizan una vez señados. Productos sujetos a disponibilidad."*
+   - Export actions:
+     - **Descargar PDF**: Generates professional PDF document via `jspdf`.
+     - **Copiar Resumen (Texto)**: Copies clean plain-text summary to clipboard.
+     - **Imprimir**: Opens browser native print dialog for the receipt canvas.
+     - **Copiar Imagen**: Generates PNG via `html2canvas` and copies directly to system clipboard via `navigator.clipboard.write([new ClipboardItem(...)])`.
+     - **Descargar Imagen (.png)**: Saves receipt snapshot directly to user device.
+4. **Order Cloning / Rehacer**:
+   - From `/orders`, staff can click "Rehacer / Clonar" on any order to populate `/orders/create` with that order's items, customer data, and payment methods for swift duplicate or revision handling.
+
+---
+
+## 10. Historical Price Tracking (`PriceHistory`)
+
+1. **Automatic Price Versioning**:
+   - Every price change across the catalog is permanently recorded with:
+     - `productId` & `productName`
+     - `priceType`: `RETAIL` | `WHOLESALE`
+     - `oldPrice` & `newPrice`
+     - `diffAmount`: Monetary change in ARS ($)
+     - `diffPercentage`: Percentage variation (%)
+     - `changedBy`: User ID, staff name, and email
+     - `source`: Trigger origin (`MANUAL_EDIT`, `MANUAL_ORDER`, `EXCEL_IMPORT`, `MASSIVE_IMPORT`)
+     - `createdAt`: Timestamp
+2. **Staff Interface**:
+   - Individual product history modal accessible from table row actions.
+   - Global price history modal accessible from `/products` top toolbar.
+
+---
+
+## 11. Business Analytics & Statistics (`/statistics`)
+
+1. **Executive Metrics (KPIs)**:
+   - Total Historical Revenue ($ ARS)
+   - Current Month Revenue ($ ARS)
+   - Total Orders Count & Average Ticket ($ ARS)
+   - Total Customers with Wholesale vs Retail breakdown
+   - Total Catalog Products with active publishing ratio
+2. **Visual Analytics**:
+   - 14-day daily sales evolution bar chart with hover tooltips and daily order counts.
+   - Commercial channel revenue distribution (Retail vs Wholesale % and total volume).
+   - Order pipeline status breakdown (Pending, Confirmed, Preparing, Ready, Delivered, Cancelled).
+   - Top 10 best-selling products table ranked by volume and monetary revenue.
+   - Most utilized payment methods summary.
+
+---
+
+## 12. Excel Management & Bulk Import
+
+1. **Staff Excel Export & Re-Import (`POST /v1/products/export/excel`, `POST /v1/products/import/excel`)**:
+   - Staff can download a complete internal `.xlsx` spreadsheet containing all catalog columns (UUID, name, barcode, retail price, wholesale price, supplier, categories, tags, active state).
+   - Staff can modify spreadsheet rows in Microsoft Excel / LibreOffice and re-upload the file to bulk update or insert catalog items.
+2. **Customer Price List Downloads (`GET /v1/products/price-list/excel`)**:
+   - Logged-in customers can download clean Excel price lists with one click.
+   - Retail customers receive retail price list; approved wholesale customers receive wholesale price list (omitting internal IDs, supplier info, and irrelevant metadata).
+3. **Massive Product Import (`POST /v1/products/import/massive`)**:
+   - High-throughput endpoint supporting JSON, XLSX, and CSV with batch processing (200 products per MongoDB `bulkWrite` roundtrip).
+   - Full documentation provided in `BULK_PRODUCT_IMPORT_SPEC.md` for integration with external ERP systems and autonomous AI agents.
+
+---
+
+## 13. Pagination & Sorting Standard
+
+- All lists across API and both frontends support standardized pagination (`page`, `limit`, `total`, `totalPages`):
+  - **Staff Products**: Sortable by name, creation date, retail price, wholesale price.
+  - **Staff Orders**: Sortable by creation date, order number, total.
+  - **Staff Customers**: Paginated with search filter.
+  - **Staff Audit Logs**: Paginated with search filter.
+  - **Customer Catalog**: Sortable by price (low to high, high to low), name (A-Z, Z-A), newest first.
+  - **Customer Order History**: Paginated in customer profile.
 
 ### Customer Store (`libreriard.com.ar`):
 - Subroutes (in English):

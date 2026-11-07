@@ -3,6 +3,10 @@ export interface ApiResponse<T = unknown> {
   message?: string;
   data?: T;
   errors?: Record<string, string[]> | string;
+  total?: number;
+  page?: number;
+  limit?: number;
+  totalPages?: number;
 }
 
 export interface PaginatedResult<T> {
