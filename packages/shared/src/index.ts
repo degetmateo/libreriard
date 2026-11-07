@@ -1,4 +1,4 @@
-export * from './enums';
+export * from './enums/index';
 export * from './dto/api-response.dto';
 export * from './dto/auth.dto';
 export * from './dto/user.dto';
