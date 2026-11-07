@@ -13,10 +13,14 @@
     "jsx": "react-jsx",
     "strict": true,
     "types": ["vite/client"],
+    "baseUrl": ".",
+    "paths": {
+      "@libreriard/shared": ["../../packages/shared/src/index.ts"],
+      "@libreriard/shared/*": ["../../packages/shared/src/*"]
+    },
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true
   },
   "include": ["src"]
 }
-

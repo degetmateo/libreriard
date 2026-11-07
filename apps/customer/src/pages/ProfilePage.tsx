@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { OrderDto } from '@libreriard/shared';
+import { OrderDto, OrderItemDto } from '@libreriard/shared';
 import { OrderService } from '../services/order.service';
 import { WholesaleRequestBox } from '../components/profile/WholesaleRequestBox';
 import { User, ShoppingBag, Tag } from 'lucide-react';
@@ -66,7 +66,7 @@ export const ProfilePage: React.FC = () => {
         ) : (
           <div className="divide-y divide-slate-100">
             {orders.map((o) => {
-              const hasDiscount = o.items.some((it) => it.discountApplied);
+              const hasDiscount = o.items.some((it: OrderItemDto) => it.discountApplied);
               return (
                 <div key={o.id} className="py-3.5 flex items-center justify-between">
                   <div>

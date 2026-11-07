@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ProductDto, ProductVariantDto } from '@libreriard/shared';
+import { ProductDto, ProductVariantDto, RetailPriceTier } from '@libreriard/shared';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 import { ImageCarousel } from './ImageCarousel';
@@ -84,7 +84,7 @@ export const ProductDetailModal: React.FC<Props> = ({ product, isOpen, onClose }
                 <Tag size={13} /> <span>Descuentos minoristas por cantidad:</span>
               </div>
               <div className="grid grid-cols-2 gap-1.5 text-xs text-slate-700">
-                {product.retailPriceTiers.map((t) => (
+                {product.retailPriceTiers.map((t: RetailPriceTier) => (
                   <div key={t.minQuantity} className={`px-2.5 py-1 rounded-lg border flex justify-between ${quantity >= t.minQuantity ? 'bg-emerald-200/60 border-emerald-300 font-bold text-emerald-950' : 'bg-white/80 border-emerald-100'}`}>
                     <span>{t.minQuantity}+ u.:</span>
                     <span>${t.unitPrice.toLocaleString('es-AR')} c/u</span>
@@ -100,7 +100,7 @@ export const ProductDetailModal: React.FC<Props> = ({ product, isOpen, onClose }
             <div>
               <label className="text-xs font-bold text-slate-700 block mb-1">Elige una variante / modelo:</label>
               <div className="grid grid-cols-2 gap-2">
-                {product.subTypes.map((v) => (
+                {product.subTypes.map((v: ProductVariantDto) => (
                   <button
                     key={v.id}
                     onClick={() => setSelectedVariant(v)}

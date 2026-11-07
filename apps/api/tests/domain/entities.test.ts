@@ -63,9 +63,48 @@ describe('Domain Entities & Factories', () => {
       tags: ['cuaderno', 'rayado', 'a4']
     });
 
-    expect(product.retailPrice.getAmount()).toBe(4500);
-    expect(product.wholesalePrice.getAmount()).toBe(3200);
+    expect(product.retailPrice?.getAmount()).toBe(4500);
+    expect(product.wholesalePrice?.getAmount()).toBe(3200);
     expect(product.barcode).toBe('7791234567890');
+  });
+
+  it('should calculate retail price tiers correctly based on order quantity', () => {
+    const product = ProductFactory.create({
+      name: 'Resma A4 75g',
+      retailPrice: 5000,
+      wholesalePrice: 4200,
+      retailPriceTiers: [
+        { minQuantity: 5, unitPrice: 4800 },
+        { minQuantity: 10, unitPrice: 4500 }
+      ]
+    });
+
+    // 1 item: base retail price applies
+    const single = product.calculateRetailUnitPrice(1);
+    expect(single).toEqual({ unitPrice: 5000, originalUnitPrice: 5000, discountApplied: false });
+
+    // 5 items: tier 1 applies (4800)
+    const five = product.calculateRetailUnitPrice(5);
+    expect(five).toEqual({ unitPrice: 4800, originalUnitPrice: 5000, discountApplied: true });
+
+    // 8 items: tier 1 still applies (4800)
+    const eight = product.calculateRetailUnitPrice(8);
+    expect(eight).toEqual({ unitPrice: 4800, originalUnitPrice: 5000, discountApplied: true });
+
+    // 10 items: tier 2 applies (4500)
+    const ten = product.calculateRetailUnitPrice(10);
+    expect(ten).toEqual({ unitPrice: 4500, originalUnitPrice: 5000, discountApplied: true });
+  });
+
+  it('should allow creating products with optional barcode and optional prices', () => {
+    const productWithoutPrices = ProductFactory.create({
+      name: 'Artículo Sin Precio'
+    });
+
+    expect(productWithoutPrices.barcode).toBeUndefined();
+    expect(productWithoutPrices.retailPrice).toBeNull();
+    expect(productWithoutPrices.wholesalePrice).toBeNull();
+    expect(productWithoutPrices.calculateRetailUnitPrice(5)).toBeNull();
   });
 });
 

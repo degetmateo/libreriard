@@ -10,9 +10,9 @@
     "dev:customer": "pnpm --filter @libreriard/customer dev",
     "build": "pnpm --filter @libreriard/shared build && pnpm --recursive --filter \"./apps/*\" build",
     "build:shared": "pnpm --filter @libreriard/shared build",
-    "build:api": "pnpm --filter @libreriard/api build",
-    "build:staff": "pnpm --filter @libreriard/staff build",
-    "build:customer": "pnpm --filter @libreriard/customer build",
+    "build:api": "pnpm --filter @libreriard/shared build && pnpm --filter @libreriard/api build",
+    "build:staff": "pnpm --filter @libreriard/shared build && pnpm --filter @libreriard/staff build",
+    "build:customer": "pnpm --filter @libreriard/shared build && pnpm --filter @libreriard/customer build",
     "start": "pnpm --filter @libreriard/api start",
     "test": "pnpm --recursive run test"
   },
