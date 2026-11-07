@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { StaffUserDto, StaffRole } from '@libreriard/shared';
 import { StaffService } from '../services/staff.service';
+import { useConfirm } from '../context/ConfirmContext';
 import { StaffModal } from '../components/staff/StaffModal';
 import { Badge } from '../components/common/Badge';
 import { Plus, Key, Trash2 } from 'lucide-react';
@@ -10,6 +11,7 @@ export const StaffPage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const staffService = new StaffService();
+  const { confirm, prompt, alert } = useConfirm();
 
   const loadStaff = async () => {
     setLoading(true);
@@ -21,17 +23,35 @@ export const StaffPage: React.FC = () => {
   useEffect(() => { loadStaff(); }, []);
 
   const handleResetPassword = async (id: string, name: string) => {
-    const newPass = prompt(`Ingrese la nueva contraseña para ${name}:`);
-    if (newPass && newPass.length >= 6) {
-      const res = await staffService.resetPassword(id, newPass);
-      alert(res.message || 'Contraseña actualizada');
-    } else if (newPass) {
-      alert('La contraseña debe tener mínimo 6 caracteres.');
+    const newPass = await prompt({
+      title: 'Restablecer Contraseña',
+      message: `Ingrese la nueva contraseña de acceso para "${name}":`,
+      placeholder: 'Mínimo 6 caracteres...',
+      inputType: 'password',
+      confirmText: 'Guardar Contraseña',
+      cancelText: 'Cancelar',
+      validate: (val) => val.trim().length >= 6 ? null : 'La contraseña debe tener al menos 6 caracteres.'
+    });
+
+    if (newPass) {
+      const res = await staffService.resetPassword(id, newPass.trim());
+      await alert({
+        title: res.success ? 'Contraseña Actualizada' : 'Error',
+        message: res.message || 'La contraseña ha sido actualizada.',
+        variant: res.success ? 'success' : 'danger'
+      });
     }
   };
 
   const handleDelete = async (id: string, name: string) => {
-    if (confirm(`¿Eliminar al miembro de staff "${name}"?`)) {
+    const ok = await confirm({
+      title: '¿Eliminar miembro de staff?',
+      message: `¿Está seguro de eliminar al miembro "${name}"?\nEsta acción no se puede deshacer.`,
+      confirmText: 'Eliminar Miembro',
+      cancelText: 'Cancelar',
+      variant: 'danger'
+    });
+    if (ok) {
       await staffService.deleteStaff(id);
       loadStaff();
     }

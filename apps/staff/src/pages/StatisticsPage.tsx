@@ -164,47 +164,49 @@ export const StatisticsPage: React.FC = () => {
         </div>
 
         {/* Responsive CSS Bar Chart */}
-        <div className="pt-6 pb-2">
-          <div className="h-48 flex items-end gap-2 sm:gap-3 border-b border-slate-800 px-1">
-            {salesTrend.map((point, idx) => {
-              const heightPct = Math.max(6, Math.round((point.totalAmount / maxDayAmount) * 100));
-              const hasSales = point.totalAmount > 0;
-              return (
-                <div key={idx} className="flex-1 flex flex-col items-center gap-1 group relative h-full justify-end">
-                  {/* Tooltip on hover */}
-                  <div className="opacity-0 group-hover:opacity-100 transition pointer-events-none absolute bottom-full mb-2 bg-slate-950 border border-slate-700 px-2 py-1 rounded shadow-xl text-[10px] text-white whitespace-nowrap z-20">
-                    <p className="font-bold text-cyan-400">${point.totalAmount.toLocaleString('es-AR')}</p>
-                    <p className="text-slate-400">{point.ordersCount} pedidos ({point.date})</p>
+        <div className="pt-6 pb-2 overflow-x-auto">
+          <div className="min-w-[480px]">
+            <div className="h-48 flex items-end gap-2 sm:gap-3 border-b border-slate-800 px-1">
+              {salesTrend.map((point, idx) => {
+                const heightPct = Math.max(6, Math.round((point.totalAmount / maxDayAmount) * 100));
+                const hasSales = point.totalAmount > 0;
+                return (
+                  <div key={idx} className="flex-1 flex flex-col items-center gap-1 group relative h-full justify-end">
+                    {/* Tooltip on hover */}
+                    <div className="opacity-0 group-hover:opacity-100 transition pointer-events-none absolute bottom-full mb-2 bg-slate-950 border border-slate-700 px-2 py-1 rounded shadow-xl text-[10px] text-white whitespace-nowrap z-20">
+                      <p className="font-bold text-cyan-400">${point.totalAmount.toLocaleString('es-AR')}</p>
+                      <p className="text-slate-400">{point.ordersCount} pedidos ({point.date})</p>
+                    </div>
+
+                    {/* Value above bar */}
+                    {hasSales && (
+                      <span className="text-[8px] font-mono text-cyan-300 font-semibold hidden md:block">
+                        ${Math.round(point.totalAmount / 1000)}k
+                      </span>
+                    )}
+
+                    {/* Bar */}
+                    <div
+                      style={{ height: `${heightPct}%` }}
+                      className={`w-full rounded-t transition-all ${
+                        hasSales
+                          ? 'bg-gradient-to-t from-cyan-600 to-cyan-400 group-hover:from-cyan-500 group-hover:to-cyan-300 shadow-sm shadow-cyan-500/20'
+                          : 'bg-slate-800/40'
+                      }`}
+                    />
                   </div>
+                );
+              })}
+            </div>
 
-                  {/* Value above bar */}
-                  {hasSales && (
-                    <span className="text-[8px] font-mono text-cyan-300 font-semibold hidden md:block">
-                      ${Math.round(point.totalAmount / 1000)}k
-                    </span>
-                  )}
-
-                  {/* Bar */}
-                  <div
-                    style={{ height: `${heightPct}%` }}
-                    className={`w-full rounded-t transition-all ${
-                      hasSales
-                        ? 'bg-gradient-to-t from-cyan-600 to-cyan-400 group-hover:from-cyan-500 group-hover:to-cyan-300 shadow-sm shadow-cyan-500/20'
-                        : 'bg-slate-800/40'
-                    }`}
-                  />
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Labels underneath */}
-          <div className="flex justify-between gap-2 sm:gap-3 px-1 pt-2">
-            {salesTrend.map((point, idx) => (
-              <span key={idx} className="flex-1 text-center text-[9px] font-mono text-slate-500">
-                {point.label}
-              </span>
-            ))}
+            {/* Labels underneath */}
+            <div className="flex justify-between gap-2 sm:gap-3 px-1 pt-2">
+              {salesTrend.map((point, idx) => (
+                <span key={idx} className="flex-1 text-center text-[9px] font-mono text-slate-500">
+                  {point.label}
+                </span>
+              ))}
+            </div>
           </div>
         </div>
       </div>

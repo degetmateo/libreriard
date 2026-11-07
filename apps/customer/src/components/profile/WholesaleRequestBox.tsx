@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { CustomerUserDto, CustomerWholesaleStatus } from '@libreriard/shared';
 import { ProfileService } from '../../services/profile.service';
+import { useConfirm } from '../../context/ConfirmContext';
 import { ShieldCheck, Clock, Send } from 'lucide-react';
 
 export const WholesaleRequestBox: React.FC<{ user: CustomerUserDto; onRequested: () => void }> = ({ user, onRequested }) => {
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
+  const { alert } = useConfirm();
   const profileService = new ProfileService();
 
   const handleRequest = async (e: React.FormEvent) => {
@@ -14,10 +16,18 @@ export const WholesaleRequestBox: React.FC<{ user: CustomerUserDto; onRequested:
     const res = await profileService.requestWholesale(message);
     setLoading(false);
     if (res.success) {
-      alert('¡Solicitud enviada con éxito! Los administradores revisarán tu perfil.');
+      await alert({
+        title: '¡Solicitud Enviada!',
+        message: 'Tu solicitud de cuenta mayorista ha sido enviada con éxito. El equipo de administración revisará tus datos a la brevedad.',
+        variant: 'success',
+      });
       onRequested();
     } else {
-      alert(res.message || 'Error al enviar la solicitud.');
+      await alert({
+        title: 'Error al enviar solicitud',
+        message: res.message || 'No se pudo enviar la solicitud. Por favor intenta nuevamente.',
+        variant: 'danger',
+      });
     }
   };
 

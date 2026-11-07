@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
+import { useConfirm } from '../context/ConfirmContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { OrderService } from '../services/order.service';
 import { TransferConfirmationModal } from '../components/cart/TransferConfirmationModal';
@@ -16,6 +17,7 @@ export const CartPage: React.FC = () => {
   const [deliveryAddress, setDeliveryAddress] = useState(user?.address || '');
   const [loading, setLoading] = useState(false);
   const [transferModalOpen, setTransferModalOpen] = useState(false);
+  const { alert } = useConfirm();
   const orderService = new OrderService();
 
   const executeOrder = async (receiptUrl?: string, receiptName?: string) => {
@@ -39,7 +41,11 @@ export const CartPage: React.FC = () => {
       setTransferModalOpen(false);
       navigate('/order-success', { state: { order: res.data } });
     } else {
-      alert(res.message || 'Error al procesar la orden');
+      await alert({
+        title: 'Error al procesar el pedido',
+        message: res.message || 'No se pudo completar la orden. Por favor verifique los datos ingresados.',
+        variant: 'danger',
+      });
     }
   };
 

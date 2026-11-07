@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { ProductDto, OrderType, RetailPriceTier } from '@libreriard/shared';
 import { ProductService } from '../../services/product.service';
+import { useConfirm } from '../../context/ConfirmContext';
 import { Trash2, Plus, Barcode, CheckSquare, Square, Tag } from 'lucide-react';
 
 export interface ManualItemRow {
@@ -35,14 +36,22 @@ export const ManualOrderTable: React.FC<Props> = ({ rows, orderType, onChange })
   const dropdownItemRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const productService = new ProductService();
 
+  const { alert } = useConfirm();
+
   const updateDropdownPosition = (rowId: string) => {
     const inputEl = nameInputRefs.current[rowId];
     if (inputEl) {
       const rect = inputEl.getBoundingClientRect();
+      const popupWidth = Math.min(window.innerWidth - 16, Math.max(260, rect.width));
+      let left = rect.left;
+      if (left + popupWidth > window.innerWidth - 8) {
+        left = window.innerWidth - popupWidth - 8;
+      }
+      left = Math.max(8, left);
       setDropdownCoords({
         top: rect.bottom + 4,
-        left: rect.left,
-        width: Math.max(380, rect.width)
+        left,
+        width: popupWidth
       });
     }
   };
@@ -268,7 +277,7 @@ export const ManualOrderTable: React.FC<Props> = ({ rows, orderType, onChange })
   };
 
   // Barcode scanner handler
-  const handleBarcodeSubmit = (e: React.FormEvent) => {
+  const handleBarcodeSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const code = barcodeInput.trim();
     if (!code) return;
@@ -302,7 +311,11 @@ export const ManualOrderTable: React.FC<Props> = ({ rows, orderType, onChange })
         }
       }
     } else {
-      alert(`No se encontró producto con código de barras: ${code}`);
+      await alert({
+        title: 'Código no encontrado',
+        message: `No se encontró ningún producto con el código de barras "${code}".\nPuede agregarlo manualmente en una fila de la tabla.`,
+        variant: 'warning',
+      });
     }
     setBarcodeInput('');
     barcodeRef.current?.focus();

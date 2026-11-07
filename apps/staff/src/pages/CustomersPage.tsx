@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { CustomerUserDto } from '@libreriard/shared';
 import { CustomerService } from '../services/customer.service';
 import { useAuth } from '../context/AuthContext';
+import { useConfirm } from '../context/ConfirmContext';
 import { CustomerEditModal } from '../components/customers/CustomerEditModal';
 import { Pagination } from '../components/common/Pagination';
 import { Badge } from '../components/common/Badge';
@@ -17,6 +18,7 @@ export const CustomersPage: React.FC = () => {
   const [totalItems, setTotalItems] = useState(0);
   const [loading, setLoading] = useState(true);
   const { isAdmin } = useAuth();
+  const { confirm, prompt, alert } = useConfirm();
   const customerService = new CustomerService();
 
   const loadCustomers = async () => {
@@ -39,8 +41,17 @@ export const CustomersPage: React.FC = () => {
     loadCustomers();
   }, [search, wholesaleOnly, page]);
 
-  const handleReviewWholesale = async (id: string, approved: boolean) => {
-    if (confirm(`¿${approved ? 'APROBAR' : 'RECHAZAR'} solicitud mayorista?`)) {
+  const handleReviewWholesale = async (id: string, name: string, approved: boolean) => {
+    const ok = await confirm({
+      title: approved ? '¿Aprobar solicitud mayorista?' : '¿Rechazar solicitud mayorista?',
+      message: approved
+        ? `¿Desea habilitar la cuenta mayorista para "${name}"? El cliente podrá acceder a precios y compras al por mayor.`
+        : `¿Desea rechazar la solicitud de cuenta mayorista para "${name}"?`,
+      confirmText: approved ? 'Aprobar Solicitud' : 'Rechazar Solicitud',
+      cancelText: 'Cancelar',
+      variant: approved ? 'success' : 'warning'
+    });
+    if (ok) {
       await customerService.reviewWholesale(id, approved);
       loadCustomers();
     }
@@ -52,12 +63,23 @@ export const CustomersPage: React.FC = () => {
   };
 
   const handleResetPassword = async (id: string, name: string) => {
-    const newPass = prompt(`Ingrese la nueva contraseña para el cliente "${name}":`);
-    if (newPass && newPass.length >= 6) {
-      const res = await customerService.resetPassword(id, newPass);
-      alert(res.message || 'Contraseña actualizada');
-    } else if (newPass) {
-      alert('La contraseña debe tener al menos 6 caracteres.');
+    const newPass = await prompt({
+      title: 'Restablecer Contraseña',
+      message: `Ingrese la nueva contraseña de acceso para "${name}":`,
+      placeholder: 'Mínimo 6 caracteres...',
+      inputType: 'password',
+      confirmText: 'Guardar Contraseña',
+      cancelText: 'Cancelar',
+      validate: (val) => val.trim().length >= 6 ? null : 'La contraseña debe tener al menos 6 caracteres.'
+    });
+
+    if (newPass) {
+      const res = await customerService.resetPassword(id, newPass.trim());
+      await alert({
+        title: res.success ? 'Contraseña Actualizada' : 'Error',
+        message: res.message || 'La contraseña del cliente ha sido actualizada con éxito.',
+        variant: res.success ? 'success' : 'danger'
+      });
     }
   };
 
@@ -136,14 +158,14 @@ export const CustomersPage: React.FC = () => {
                       {c.wholesaleStatus === 'PENDING' && (
                         <>
                           <button
-                            onClick={() => handleReviewWholesale(c.id, true)}
+                            onClick={() => handleReviewWholesale(c.id, c.name, true)}
                             className="text-emerald-400 hover:text-emerald-300 p-1"
                             title="Aprobar Mayorista"
                           >
                             <CheckCircle size={16} />
                           </button>
                           <button
-                            onClick={() => handleReviewWholesale(c.id, false)}
+                            onClick={() => handleReviewWholesale(c.id, c.name, false)}
                             className="text-rose-400 hover:text-rose-300 p-1"
                             title="Rechazar Mayorista"
                           >

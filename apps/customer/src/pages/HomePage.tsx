@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { ProductDto } from '@libreriard/shared';
 import { CatalogService } from '../services/catalog.service';
 import { useAuth } from '../context/AuthContext';
+import { useConfirm } from '../context/ConfirmContext';
 import { ProductCard } from '../components/catalog/ProductCard';
 import { ProductDetailModal } from '../components/catalog/ProductDetailModal';
 import { Pagination } from '../components/common/Pagination';
@@ -19,6 +20,7 @@ export const HomePage: React.FC = () => {
   const [downloading, setDownloading] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<ProductDto | null>(null);
   const [loading, setLoading] = useState(true);
+  const { alert } = useConfirm();
   const catalogService = new CatalogService();
 
   const categories = ['Todas', 'Escolar', 'Comercial', 'Artística', 'Cuadernos', 'Escritura', 'Papelería'];
@@ -73,7 +75,11 @@ export const HomePage: React.FC = () => {
       a.click();
       window.URL.revokeObjectURL(url);
     } catch {
-      alert('Error al descargar la lista de precios. Asegúrate de haber iniciado sesión.');
+      await alert({
+        title: 'Error de Descarga',
+        message: 'No se pudo descargar la lista de precios. Asegúrese de haber iniciado sesión.',
+        variant: 'danger',
+      });
     } finally {
       setDownloading(false);
     }

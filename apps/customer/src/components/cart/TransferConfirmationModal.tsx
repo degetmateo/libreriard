@@ -34,8 +34,8 @@ export const TransferConfirmationModal: React.FC<Props> = ({ isOpen, onClose, on
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm">
-      <div className="bg-white rounded-3xl max-w-lg w-full p-6 space-y-4 shadow-2xl border border-slate-200 animate-in fade-in max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/70 backdrop-blur-sm overflow-y-auto">
+      <div className="bg-white rounded-3xl max-w-lg w-full p-4 sm:p-6 space-y-4 shadow-2xl border border-slate-200 animate-in fade-in max-h-[92dvh] overflow-y-auto my-auto">
         <div className="flex items-center justify-between pb-2 border-b border-slate-100">
           <h3 className="text-base font-bold text-slate-900">Confirmación de Transferencia Bancaria</h3>
           <button onClick={onClose} className="text-slate-400 hover:text-slate-600 p-1"><X size={18} /></button>

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ProductDto } from '@libreriard/shared';
 import { ProductService } from '../services/product.service';
+import { useConfirm } from '../context/ConfirmContext';
 import { ProductModal } from '../components/products/ProductModal';
 import { ExcelImportModal } from '../components/products/ExcelImportModal';
 import { MassiveImportModal } from '../components/products/MassiveImportModal';
@@ -27,6 +28,7 @@ export const ProductsPage: React.FC = () => {
   const [exporting, setExporting] = useState(false);
   const [loading, setLoading] = useState(true);
   const productService = new ProductService();
+  const { confirm, alert } = useConfirm();
 
   const loadProducts = async () => {
     setLoading(true);
@@ -60,7 +62,11 @@ export const ProductsPage: React.FC = () => {
       a.click();
       window.URL.revokeObjectURL(url);
     } catch {
-      alert('Error al descargar catálogo en Excel');
+      await alert({
+        title: 'Error al exportar',
+        message: 'No se pudo generar el archivo Excel de productos. Verifique su conexión y vuelva a intentar.',
+        variant: 'danger',
+      });
     } finally {
       setExporting(false);
     }
@@ -71,9 +77,16 @@ export const ProductsPage: React.FC = () => {
     loadProducts();
   };
 
-  const handleDelete = async (id: string) => {
-    if (confirm('¿Está seguro de eliminar este producto?')) {
-      await productService.deleteProduct(id);
+  const handleDelete = async (p: ProductDto) => {
+    const ok = await confirm({
+      title: '¿Eliminar producto?',
+      message: `¿Está seguro de eliminar el producto "${p.name}"?\nEsta acción no se puede deshacer y sus imágenes asociadas en Cloudinary también serán eliminadas.`,
+      confirmText: 'Eliminar Producto',
+      cancelText: 'Cancelar',
+      variant: 'danger',
+    });
+    if (ok) {
+      await productService.deleteProduct(p.id);
       loadProducts();
     }
   };
@@ -273,7 +286,8 @@ export const ProductsPage: React.FC = () => {
                         <Edit2 size={15} />
                       </button>
                       <button
-                        onClick={() => handleDelete(p.id)}
+                        onClick={() => handleDelete(p)}
+                        title="Eliminar producto"
                         className="text-slate-400 hover:text-rose-400 p-1.5 hover:bg-slate-900 rounded-lg transition"
                       >
                         <Trash2 size={15} />

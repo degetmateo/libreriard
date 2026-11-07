@@ -18,7 +18,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
     { to: '/statistics', label: 'Estadísticas', icon: BarChart3 },
     { to: '/customers', label: 'Clientes', icon: Users },
     ...(isAdmin ? [
-      { to: '/staff', label: 'Gestión de Staff', icon: UserCheck },
+      { to: '/staff', label: 'Personal', icon: UserCheck },
       { to: '/settings', label: 'Configuración', icon: Sliders },
       { to: '/audit-logs', label: 'Logs de Auditoría', icon: ShieldAlert }
     ] : [])

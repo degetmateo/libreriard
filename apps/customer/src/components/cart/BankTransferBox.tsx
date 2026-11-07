@@ -1,22 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import { BankTransferDetailsDto } from '@libreriard/shared';
 import { CatalogService } from '../../services/catalog.service';
-import { Landmark, Copy } from 'lucide-react';
+import { Landmark, Copy, Check } from 'lucide-react';
 
 export const BankTransferBox: React.FC = () => {
   const [details, setDetails] = useState<BankTransferDetailsDto | null>(null);
+  const [copiedField, setCopiedField] = useState<string | null>(null);
 
   useEffect(() => {
-    new CatalogService().getBankDetails().then(res => {
+    new CatalogService().getBankDetails().then((res) => {
       if (res.success && res.data) setDetails(res.data.bankTransferDetails);
     });
   }, []);
 
   if (!details) return null;
 
-  const copyToClipboard = (text: string) => {
+  const copyToClipboard = (text: string, field: string) => {
     navigator.clipboard.writeText(text);
-    alert('Copiado al portapapeles: ' + text);
+    setCopiedField(field);
+    setTimeout(() => setCopiedField(null), 2000);
   };
 
   return (
@@ -32,15 +34,54 @@ export const BankTransferBox: React.FC = () => {
         <div><strong>Tipo de Cuenta:</strong> {details.accountType}</div>
       </div>
       <div className="bg-white p-2.5 rounded-xl border border-cyan-200 flex items-center justify-between">
-        <div><span className="text-[10px] text-slate-400 block uppercase font-bold">CBU</span><span className="font-mono font-bold text-slate-900">{details.cbu}</span></div>
-        <button onClick={() => copyToClipboard(details.cbu)} className="text-cyan-700 hover:text-cyan-900 p-1" title="Copiar CBU"><Copy size={16} /></button>
+        <div>
+          <span className="text-[10px] text-slate-400 block uppercase font-bold">CBU</span>
+          <span className="font-mono font-bold text-slate-900">{details.cbu}</span>
+        </div>
+        <button
+          type="button"
+          onClick={() => copyToClipboard(details.cbu, 'cbu')}
+          className="text-cyan-700 hover:text-cyan-900 p-1 flex items-center gap-1 text-xs font-semibold transition"
+          title="Copiar CBU"
+        >
+          {copiedField === 'cbu' ? (
+            <>
+              <Check size={14} className="text-emerald-600" />
+              <span className="text-emerald-600">¡Copiado!</span>
+            </>
+          ) : (
+            <>
+              <Copy size={16} />
+              <span>Copiar</span>
+            </>
+          )}
+        </button>
       </div>
       <div className="bg-white p-2.5 rounded-xl border border-cyan-200 flex items-center justify-between">
-        <div><span className="text-[10px] text-slate-400 block uppercase font-bold">Alias CBU</span><span className="font-mono font-bold text-cyan-700">{details.alias}</span></div>
-        <button onClick={() => copyToClipboard(details.alias)} className="text-cyan-700 hover:text-cyan-900 p-1" title="Copiar Alias"><Copy size={16} /></button>
+        <div>
+          <span className="text-[10px] text-slate-400 block uppercase font-bold">Alias CBU</span>
+          <span className="font-mono font-bold text-cyan-700">{details.alias}</span>
+        </div>
+        <button
+          type="button"
+          onClick={() => copyToClipboard(details.alias, 'alias')}
+          className="text-cyan-700 hover:text-cyan-900 p-1 flex items-center gap-1 text-xs font-semibold transition"
+          title="Copiar Alias"
+        >
+          {copiedField === 'alias' ? (
+            <>
+              <Check size={14} className="text-emerald-600" />
+              <span className="text-emerald-600">¡Copiado!</span>
+            </>
+          ) : (
+            <>
+              <Copy size={16} />
+              <span>Copiar</span>
+            </>
+          )}
+        </button>
       </div>
       {details.notes && <p className="text-[11px] text-slate-500 italic mt-1">{details.notes}</p>}
     </div>
   );
 };
-
