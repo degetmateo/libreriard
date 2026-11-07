@@ -1,14 +1,108 @@
 <!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Librería Rubén Darío - Venta Minorista y Mayorista</title>
-  </head>
-  <body class="bg-slate-50 text-slate-800 min-h-screen">
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
-</html>
 
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#020617" />
+
+  <!-- Primary SEO Meta Tags -->
+  <title>Librería Rubén Darío | Artículos Escolares, Comerciales y Mayorista en Pacheco</title>
+  <meta name="description"
+    content="Librería Rubén Darío en General Pacheco: insumos escolares, comerciales y artísticos al por mayor y menor. Comprá online con retiro en local o envíos a todo el país." />
+  <meta name="keywords"
+    content="libreria pacheco, libreria ruben dario, articulos escolares, libreria mayorista, papeleria general pacheco, utiles escolares zona norte, insumos comerciales, materiales artisticos" />
+  <meta name="author" content="Librería Rubén Darío" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://libreriard.com.ar/" />
+
+  <!-- Performance & Core Web Vitals (Preload & Preconnect) -->
+  <link rel="preconnect" href="https://res.cloudinary.com" crossorigin />
+  <link rel="preload" href="/logo.png" as="image" type="image/png" fetchpriority="high" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  <link rel="apple-touch-icon" href="/logo.png" />
+
+  <!-- Open Graph / Facebook / WhatsApp (Rich Previews) -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Librería Rubén Darío" />
+  <meta property="og:title" content="Librería Rubén Darío | Artículos Escolares, Comerciales y Mayorista" />
+  <meta property="og:description"
+    content="Insumos escolares, papelería comercial y materiales artísticos al por mayor y menor en General Pacheco. Comprá online con precios diferenciales." />
+  <meta property="og:image" content="https://libreriard.com.ar/logo.png" />
+  <meta property="og:url" content="https://libreriard.com.ar/" />
+  <meta property="og:locale" content="es_AR" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Librería Rubén Darío | Venta Minorista y Mayorista" />
+  <meta name="twitter:description"
+    content="Insumos escolares, artículos de oficina y materiales artísticos en General Pacheco. Venta minorista y mayorista." />
+  <meta name="twitter:image" content="https://libreriard.com.ar/logo.png" />
+
+  <!-- Schema.org: LocalBusiness / Store Structured Data -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Store",
+      "@id": "https://libreriard.com.ar/#store",
+      "name": "Librería Rubén Darío",
+      "alternateName": "Rubén Darío Librería",
+      "image": "https://libreriard.com.ar/logo.png",
+      "url": "https://libreriard.com.ar",
+      "telephone": "+54 9 11 3884-6058",
+      "email": "libreriard@yahoo.com.ar",
+      "priceRange": "$$",
+      "paymentAccepted": "Cash, Credit Card, Debit Card, Bank Transfer",
+      "currenciesAccepted": "ARS",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Montevideo 949",
+        "addressLocality": "General Pacheco",
+        "addressRegion": "Provincia de Buenos Aires",
+        "postalCode": "B1617",
+        "addressCountry": "AR"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": -34.4578,
+        "longitude": -58.6291
+      },
+      "openingHoursSpecification": [
+        {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+          "opens": "09:00",
+          "closes": "17:00"
+        },
+        {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": ["Saturday"],
+          "opens": "09:00",
+          "closes": "13:00"
+        }
+      ]
+    }
+    </script>
+
+  <!-- Schema.org: WebSite with SearchAction (Sitelinks Searchbox) -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Librería Rubén Darío",
+      "url": "https://libreriard.com.ar",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://libreriard.com.ar/?search={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+</head>
+
+<body class="bg-slate-50 text-slate-800 min-h-screen">
+  <div id="root"></div>
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+
+</html>

@@ -6,6 +6,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { OrderService } from '../services/order.service';
 import { TransferConfirmationModal } from '../components/cart/TransferConfirmationModal';
 import { PaymentMethod, DeliveryMethod } from '@libreriard/shared';
+import { SEOHead } from '../components/common/SEOHead';
 import { Trash2, ArrowRight, Tag } from 'lucide-react';
 
 export const CartPage: React.FC = () => {
@@ -64,6 +65,7 @@ export const CartPage: React.FC = () => {
   if (items.length === 0) {
     return (
       <div className="max-w-xl mx-auto py-16 text-center space-y-4">
+        <SEOHead title="Mi Carrito" canonicalPath="/cart" noIndex={true} />
         <h2 className="text-2xl font-bold text-slate-800">Tu carrito está vacío</h2>
         <p className="text-sm text-slate-500">Explora nuestro catálogo para agregar productos escolares, comerciales y artísticos.</p>
         <Link to="/" className="inline-block px-6 py-2.5 bg-cyan-400 text-slate-950 font-bold rounded-xl text-sm">Explorar Catálogo</Link>
@@ -73,6 +75,7 @@ export const CartPage: React.FC = () => {
 
   return (
     <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+      <SEOHead title="Mi Carrito" canonicalPath="/cart" noIndex={true} />
       <div className="md:col-span-2 space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-bold text-slate-900">Carrito de Compras ({items.length})</h2>

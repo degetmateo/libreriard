@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CatalogService } from '../services/catalog.service';
+import { SEOHead } from '../components/common/SEOHead';
 import { ShieldCheck, ArrowLeft } from 'lucide-react';
 
 export const PrivacyPage: React.FC = () => {
@@ -18,6 +19,11 @@ export const PrivacyPage: React.FC = () => {
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-8">
+      <SEOHead
+        title="Política de Privacidad"
+        canonicalPath="/privacy-policy"
+        description="Conocé las políticas de privacidad y el tratamiento seguro de datos personales en Librería Rubén Darío General Pacheco."
+      />
       <Link to="/" className="inline-flex items-center gap-1.5 text-xs font-semibold text-cyan-600 hover:text-cyan-700 mb-6 transition">
         <ArrowLeft size={16} />
         <span>Volver a la tienda</span>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useLocation, Link, useNavigate } from 'react-router-dom';
 import { CustomerAuthService } from '../services/customer-auth.service';
+import { SEOHead } from '../components/common/SEOHead';
 import { KeyRound, AlertCircle, CheckCircle2 } from 'lucide-react';
 
 export const ResetPasswordPage: React.FC = () => {
@@ -32,6 +33,7 @@ export const ResetPasswordPage: React.FC = () => {
 
   return (
     <div className="max-w-md mx-auto py-16 px-4">
+      <SEOHead title="Nueva Contraseña" canonicalPath="/reset-password" noIndex={true} />
       <div className="bg-white rounded-3xl border border-slate-200 p-8 shadow-xl space-y-4">
         <div className="text-center">
           <div className="w-12 h-12 bg-cyan-100 text-cyan-700 rounded-full flex items-center justify-center mx-auto mb-2">

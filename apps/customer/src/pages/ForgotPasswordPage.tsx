@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { CustomerAuthService } from '../services/customer-auth.service';
 import { Link } from 'react-router-dom';
+import { SEOHead } from '../components/common/SEOHead';
 import { Mail, CheckCircle2 } from 'lucide-react';
 
 export const ForgotPasswordPage: React.FC = () => {
@@ -18,6 +19,7 @@ export const ForgotPasswordPage: React.FC = () => {
 
   return (
     <div className="max-w-md mx-auto py-16 px-4">
+      <SEOHead title="Recuperar Contraseña" canonicalPath="/forgot-password" noIndex={true} />
       <div className="bg-white rounded-3xl border border-slate-200 p-8 text-center space-y-4 shadow-xl">
         {sent ? (
           <>

@@ -27,6 +27,10 @@ export const ImageCarousel: React.FC<Props> = ({ images, altName }) => {
       <img
         src={safeImages[currentIndex].url}
         alt={`${altName} - ${currentIndex + 1}`}
+        width={500}
+        height={350}
+        loading="lazy"
+        decoding="async"
         className="w-full h-full object-contain p-2 transition-all duration-300"
       />
 

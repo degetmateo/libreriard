@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { SEOHead } from '../components/common/SEOHead';
 import { LogIn, AlertCircle } from 'lucide-react';
 
 export const LoginPage: React.FC = () => {
@@ -29,9 +30,10 @@ export const LoginPage: React.FC = () => {
 
   return (
     <div className="max-w-md mx-auto py-12 px-4">
+      <SEOHead title="Iniciar Sesión" canonicalPath="/login" noIndex={true} />
       <div className="bg-white rounded-3xl border border-slate-200 p-8 shadow-xl space-y-6">
         <div className="text-center">
-          <img src="/logo.png" alt="Librería Rubén Darío" className="w-14 h-14 object-contain mx-auto mb-2" />
+          <img src="/logo.png" alt="Librería Rubén Darío" width={56} height={56} className="w-14 h-14 object-contain mx-auto mb-2" />
           <h2 className="text-2xl font-black text-slate-900 tracking-tight">Iniciar Sesión</h2>
           <p className="text-xs text-slate-500 mt-1">Ingresa a tu cuenta para comprar y gestionar tus pedidos</p>
         </div>

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import { CustomerAuthService } from '../services/customer-auth.service';
+import { SEOHead } from '../components/common/SEOHead';
 import { CheckCircle2, AlertCircle } from 'lucide-react';
 
 export const ActivateAccountPage: React.FC = () => {
@@ -32,6 +33,7 @@ export const ActivateAccountPage: React.FC = () => {
 
   return (
     <div className="max-w-md mx-auto py-16 px-4">
+      <SEOHead title="Activar Cuenta" canonicalPath="/activate-account" noIndex={true} />
       <div className="bg-white rounded-3xl border border-slate-200 p-8 text-center space-y-4 shadow-xl">
         {status === 'loading' && (
           <p className="text-sm text-slate-500">Activando tu cuenta, por favor espera...</p>

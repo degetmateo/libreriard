@@ -6,11 +6,11 @@ import { MapPin, Phone, Mail, Clock, ExternalLink } from 'lucide-react';
 
 export const Footer: React.FC = () => {
   const [contact, setContact] = useState<FooterContactDto>({
-    address: 'Av. Principal 1234, San Rafael, Mendoza',
-    googleMapsUrl: 'https://maps.google.com',
+    address: 'Montevideo 949, B1617 Gral. Pacheco, Provincia de Buenos Aires',
+    googleMapsUrl: 'https://maps.google.com/?q=Montevideo+949,+B1617+Gral.+Pacheco,+Provincia+de+Buenos+Aires',
     schedule: 'Lunes a Viernes 8:30 a 12:30 y 16:30 a 20:30',
-    email: 'contacto@libreriard.com.ar',
-    phone: '+54 9 260 4123456'
+    email: 'libreriard@yahoo.com.ar',
+    phone: '+54 9 11 3884-6058'
   });
 
   useEffect(() => {
@@ -26,7 +26,15 @@ export const Footer: React.FC = () => {
       <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
         <div>
           <div className="flex items-center space-x-2 mb-3">
-            <img src="/logo.png" alt="Librería Rubén Darío" className="w-8 h-8 object-contain" />
+            <img
+              src="/logo.png"
+              alt="Librería Rubén Darío"
+              width={32}
+              height={32}
+              loading="lazy"
+              decoding="async"
+              className="w-8 h-8 object-contain"
+            />
             <h4 className="font-black text-white text-base">Librería Rubén Darío</h4>
           </div>
           <p className="text-slate-400 leading-relaxed">

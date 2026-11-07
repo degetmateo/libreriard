@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CatalogService } from '../services/catalog.service';
+import { SEOHead } from '../components/common/SEOHead';
 import { FileText, ArrowLeft } from 'lucide-react';
 
 export const TermsPage: React.FC = () => {
@@ -18,6 +19,11 @@ export const TermsPage: React.FC = () => {
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-8">
+      <SEOHead
+        title="Términos y Condiciones"
+        canonicalPath="/terms-and-conditions"
+        description="Conocé los términos y condiciones de compra, envíos, formas de pago y políticas comerciales de Librería Rubén Darío en General Pacheco."
+      />
       <Link to="/" className="inline-flex items-center gap-1.5 text-xs font-semibold text-cyan-600 hover:text-cyan-700 mb-6 transition">
         <ArrowLeft size={16} />
         <span>Volver a la tienda</span>

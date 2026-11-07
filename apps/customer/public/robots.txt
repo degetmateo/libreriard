@@ -1,0 +1,17 @@
+User-agent: *
+Allow: /
+Allow: /terms-and-conditions
+Allow: /privacy-policy
+Disallow: /cart
+Disallow: /order-success
+Disallow: /login
+Disallow: /register
+Disallow: /profile
+Disallow: /activate-account
+Disallow: /forgot-password
+Disallow: /reset-password
+Disallow: /*?search=*
+
+# Sitemaps
+Sitemap: https://libreriard.com.ar/sitemap.xml
+

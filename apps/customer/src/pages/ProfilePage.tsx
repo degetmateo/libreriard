@@ -5,6 +5,7 @@ import { OrderDto, OrderItemDto } from '@libreriard/shared';
 import { OrderService } from '../services/order.service';
 import { WholesaleRequestBox } from '../components/profile/WholesaleRequestBox';
 import { Pagination } from '../components/common/Pagination';
+import { SEOHead } from '../components/common/SEOHead';
 import { User, ShoppingBag, Tag } from 'lucide-react';
 
 const ORDER_STATUS_LABELS: Record<string, string> = {
@@ -44,6 +45,7 @@ export const ProfilePage: React.FC = () => {
 
   return (
     <div className="max-w-4xl mx-auto py-6 space-y-6">
+      <SEOHead title="Mi Perfil" canonicalPath="/profile" noIndex={true} />
       <div className="bg-white rounded-3xl border border-slate-200 p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-sm">
         <div className="flex items-center space-x-4">
           <div className="w-14 h-14 rounded-2xl bg-cyan-100 text-cyan-700 flex items-center justify-center font-bold text-xl">

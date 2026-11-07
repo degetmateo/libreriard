@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ProductDto, ProductVariantDto, RetailPriceTier } from '@libreriard/shared';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
+import { SEOHead } from '../common/SEOHead';
 import { ImageCarousel } from './ImageCarousel';
 import { X, ShoppingCart, Check, AlertCircle, Tag } from 'lucide-react';
 
@@ -44,8 +45,39 @@ export const ProductDetailModal: React.FC<Props> = ({ product, isOpen, onClose }
     setTimeout(() => { setAdded(false); onClose(); }, 700);
   };
 
+  const productSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: product.name,
+    image: product.images?.[0]?.url || 'https://libreriard.com.ar/logo.png',
+    description: product.description || `Comprá ${product.name} en Librería Rubén Darío General Pacheco.`,
+    sku: product.barcode || product.id,
+    brand: {
+      '@type': 'Brand',
+      name: product.supplier || 'Librería Rubén Darío',
+    },
+    offers: {
+      '@type': 'Offer',
+      url: `https://libreriard.com.ar/?product=${product.id}`,
+      priceCurrency: 'ARS',
+      price: finalPrice || 0,
+      availability: 'https://schema.org/InStock',
+      seller: {
+        '@type': 'Store',
+        name: 'Librería Rubén Darío',
+      },
+    },
+  };
+
   return (
     <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+      <SEOHead
+        title={product.name}
+        description={product.description || `Comprá ${product.name} en Librería Rubén Darío General Pacheco al mejor precio.`}
+        ogImage={product.images?.[0]?.url}
+        ogType="product"
+        schemaJson={productSchema}
+      />
       <div className="bg-white rounded-3xl max-w-lg w-full p-4 sm:p-6 relative shadow-2xl overflow-y-auto max-h-[92dvh] my-auto">
         <button onClick={onClose} className="absolute right-4 top-4 p-1 rounded-full text-slate-400 hover:text-slate-700 bg-slate-100 z-10">
           <X size={20} />

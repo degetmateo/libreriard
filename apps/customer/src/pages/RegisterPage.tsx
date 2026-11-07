@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
+import { SEOHead } from '../components/common/SEOHead';
 import { UserPlus, CheckCircle, AlertCircle } from 'lucide-react';
 
 export const RegisterPage: React.FC = () => {
@@ -29,6 +30,7 @@ export const RegisterPage: React.FC = () => {
   if (registered) {
     return (
       <div className="max-w-md mx-auto py-12 px-4">
+        <SEOHead title="Registro Exitoso" canonicalPath="/register" noIndex={true} />
         <div className="bg-white rounded-3xl border border-slate-200 p-8 text-center space-y-4 shadow-xl">
           <div className="w-14 h-14 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto">
             <CheckCircle size={32} />
@@ -49,6 +51,7 @@ export const RegisterPage: React.FC = () => {
 
   return (
     <div className="max-w-lg mx-auto py-8 px-4">
+      <SEOHead title="Crear Cuenta" canonicalPath="/register" noIndex={true} />
       <div className="bg-white rounded-3xl border border-slate-200 p-8 shadow-xl space-y-4">
         <div className="text-center">
           <h2 className="text-2xl font-black text-slate-900">Crear Cuenta de Cliente</h2>

@@ -3,6 +3,7 @@ import { ProductDto } from '@libreriard/shared';
 import { CatalogService } from '../services/catalog.service';
 import { useAuth } from '../context/AuthContext';
 import { useConfirm } from '../context/ConfirmContext';
+import { SEOHead } from '../components/common/SEOHead';
 import { ProductCard } from '../components/catalog/ProductCard';
 import { ProductDetailModal } from '../components/catalog/ProductDetailModal';
 import { Pagination } from '../components/common/Pagination';
@@ -87,8 +88,14 @@ export const HomePage: React.FC = () => {
 
   return (
     <div className="space-y-8">
-      {/* Hero Banner */}
-      <div className="bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 rounded-3xl p-6 sm:p-10 text-white relative overflow-hidden border border-slate-800 shadow-xl">
+      <SEOHead
+        title="Artículos Escolares, Comerciales y Mayorista en Pacheco"
+        canonicalPath="/"
+        description="Librería Rubén Darío en General Pacheco: insumos escolares, comerciales y artísticos al por mayor y menor. Comprá online con retiro en local o envíos a todo el país."
+      />
+
+      {/* Hero Banner Section */}
+      <section aria-label="Portada de Librería Rubén Darío" className="bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 rounded-3xl p-6 sm:p-10 text-white relative overflow-hidden border border-slate-800 shadow-xl">
         <div className="relative z-10 max-w-2xl">
           <div className="flex flex-wrap items-center gap-2 mb-3">
             <span className="inline-block px-3 py-1 bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 rounded-full text-xs font-bold">
@@ -109,7 +116,7 @@ export const HomePage: React.FC = () => {
             Librería <span className="text-cyan-400">Rubén Darío</span>
           </h1>
           <p className="text-sm sm:text-base text-slate-300 mb-6">
-            Líderes en insumos escolares, artículos de oficina, papelería comercial y materiales artísticos al mejor precio.
+            Líderes en insumos escolares, artículos de oficina, papelería comercial y materiales artísticos al mejor precio en General Pacheco.
           </p>
           <div className="relative max-w-lg">
             <Search size={18} className="absolute left-3.5 top-3.5 text-slate-400" />
@@ -122,18 +129,21 @@ export const HomePage: React.FC = () => {
                 setPage(1);
               }}
               className="w-full pl-10 pr-4 py-3 bg-slate-800/90 border border-slate-700 rounded-xl text-white placeholder-slate-400 text-sm focus:outline-none focus:border-cyan-400 shadow-inner"
+              aria-label="Buscar en el catálogo"
             />
           </div>
         </div>
         <img
           src="/logo.png"
-          alt="Librería Rubén Darío"
+          alt="Librería Rubén Darío - Pacheco"
+          width={256}
+          height={256}
           className="absolute -right-8 -bottom-8 w-64 h-64 object-contain opacity-20 pointer-events-none"
         />
-      </div>
+      </section>
 
       {/* Filter and Sort Bar */}
-      <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
+      <section aria-label="Filtros del catálogo" className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
         {/* Category Pills */}
         <div className="flex items-center space-x-2 overflow-x-auto pb-2 flex-1">
           {categories.map((cat) => (
@@ -163,6 +173,7 @@ export const HomePage: React.FC = () => {
               setSortOption(e.target.value);
               setPage(1);
             }}
+            aria-label="Ordenar productos"
             className="bg-white border border-slate-200 rounded-xl px-3 py-2 text-slate-700 font-semibold focus:outline-none focus:border-cyan-400 shadow-sm"
           >
             <option value="newest">Más recientes</option>
@@ -172,10 +183,15 @@ export const HomePage: React.FC = () => {
             <option value="nameDesc">Nombre (Z - A)</option>
           </select>
         </div>
-      </div>
+      </section>
 
-      {/* Products Grid */}
-      <div>
+      {/* Products Grid Section */}
+      <section aria-label="Catálogo de productos">
+        <h2 className="text-lg font-bold text-slate-900 mb-4 flex items-center justify-between">
+          <span>{category && category !== 'Todas' ? `Categoría: ${category}` : 'Catálogo Completo'}</span>
+          <span className="text-xs font-normal text-slate-500">{totalItems} productos disponibles</span>
+        </h2>
+
         {loading ? (
           <div className="p-12 text-center text-slate-400 font-medium">Cargando catálogo...</div>
         ) : products.length === 0 ? (
@@ -200,7 +216,7 @@ export const HomePage: React.FC = () => {
             />
           </div>
         )}
-      </div>
+      </section>
 
       <ProductDetailModal
         product={selectedProduct}

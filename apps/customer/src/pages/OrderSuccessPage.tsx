@@ -2,6 +2,7 @@ import React from 'react';
 import { useLocation, Link, Navigate } from 'react-router-dom';
 import { OrderDto, PaymentMethod } from '@libreriard/shared';
 import { BankTransferBox } from '../components/cart/BankTransferBox';
+import { SEOHead } from '../components/common/SEOHead';
 import { CheckCircle2, ArrowRight } from 'lucide-react';
 
 export const OrderSuccessPage: React.FC = () => {
@@ -14,6 +15,7 @@ export const OrderSuccessPage: React.FC = () => {
 
   return (
     <div className="max-w-xl mx-auto py-10 px-4 space-y-6">
+      <SEOHead title="Pedido Confirmado" canonicalPath="/order-success" noIndex={true} />
       <div className="bg-white rounded-3xl border border-slate-200 p-8 text-center shadow-lg space-y-4">
         <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto">
           <CheckCircle2 size={36} />

@@ -1,13 +1,16 @@
 import express, { Application } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
+import compression from 'compression';
 import cookieParser from 'cookie-parser';
 import { ApiRouter } from './presentation/routes/api.router';
+import { SitemapController } from './presentation/controllers/sitemap.controller';
 import { ErrorHandlerMiddleware } from './presentation/middlewares/error-handler.middleware';
 import { EnvConfig } from './infrastructure/config/env.config';
 
 export class App {
   public readonly app: Application;
+  private readonly sitemapController = new SitemapController();
 
   constructor() {
     this.app = express();
@@ -17,7 +20,13 @@ export class App {
   }
 
   private configureMiddlewares(): void {
-    this.app.use(helmet());
+    // Compress all HTTP responses (Gzip/Brotli) to optimize TTFB and Core Web Vitals
+    this.app.use(compression());
+
+    this.app.use(helmet({
+      contentSecurityPolicy: false, // allow inline resources / CDNs for fonts and images
+      crossOriginResourcePolicy: { policy: 'cross-origin' }
+    }));
 
     const allowedOrigins = [
       EnvConfig.CLIENT_URL,
@@ -48,6 +57,17 @@ export class App {
       res.json({ status: 'ok', timestamp: new Date().toISOString() });
     });
 
+    // Dynamic SEO XML Sitemap endpoint
+    this.app.get('/sitemap.xml', this.sitemapController.generate);
+
+    // Robots.txt endpoint
+    this.app.get('/robots.txt', (_req, res) => {
+      const robots = `User-agent: *\nAllow: /\nDisallow: /cart\nDisallow: /profile\nDisallow: /login\nDisallow: /register\nSitemap: https://libreriard.com.ar/sitemap.xml\n`;
+      res.setHeader('Content-Type', 'text/plain');
+      res.setHeader('Cache-Control', 'public, max-age=86400');
+      res.status(200).send(robots);
+    });
+
     this.app.use(['/v1'], ApiRouter.create());
   }
 
@@ -55,4 +75,3 @@ export class App {
     this.app.use(ErrorHandlerMiddleware.handle);
   }
 }
-

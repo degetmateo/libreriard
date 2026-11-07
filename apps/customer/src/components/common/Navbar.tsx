@@ -13,7 +13,7 @@ export const Navbar: React.FC = () => {
     <nav className="bg-slate-900 border-b border-slate-800 sticky top-0 z-40 text-slate-100 shadow-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         <Link to="/" className="flex items-center space-x-3">
-          <img src="/logo.png" alt="Rubén Darío" className="w-10 h-10 object-contain drop-shadow" />
+          <img src="/logo.png" alt="Librería Rubén Darío" width={40} height={40} className="w-10 h-10 object-contain drop-shadow" />
           <div>
             <span className="font-extrabold text-base tracking-tight text-white block">Librería Rubén Darío</span>
             <span className="text-[11px] text-cyan-400 font-semibold tracking-wider uppercase block">Escolar • Comercial • Artística</span>

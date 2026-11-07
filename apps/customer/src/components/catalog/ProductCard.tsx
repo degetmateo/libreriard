@@ -31,7 +31,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onOpenDetails
   };
 
   return (
-    <div
+    <article
       onClick={() => onOpenDetails(product)}
       className="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-sm hover:shadow-md hover:border-cyan-400 transition cursor-pointer flex flex-col justify-between group"
     >
@@ -39,7 +39,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onOpenDetails
         <div className="relative aspect-square w-full bg-slate-50 rounded-xl overflow-hidden mb-3 flex items-center justify-center border border-slate-100">
           <img
             src={product.images[0]?.url || '/logo.png'}
-            alt={product.name}
+            alt={`${product.name} - Librería Rubén Darío`}
+            width={300}
+            height={300}
+            loading="lazy"
+            decoding="async"
             className="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform duration-300"
           />
           {isWholesale && (
@@ -49,9 +53,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onOpenDetails
           )}
         </div>
         <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">{product.supplier || 'Librería'}</span>
-        <h4 className="text-sm font-bold text-slate-800 line-clamp-2 mt-0.5 leading-snug group-hover:text-cyan-600 transition">
+        <h3 className="text-sm font-bold text-slate-800 line-clamp-2 mt-0.5 leading-snug group-hover:text-cyan-600 transition">
           {product.name}
-        </h4>
+        </h3>
       </div>
 
       <div className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between">
@@ -74,10 +78,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onOpenDetails
           disabled={!hasPrice && !hasVariants}
           className="p-2 rounded-xl bg-slate-900 text-cyan-400 hover:bg-cyan-400 hover:text-slate-950 transition disabled:opacity-40"
           title={hasPrice ? (hasVariants ? 'Elegir opciones' : 'Agregar al carrito') : 'Ver detalles'}
+          aria-label={`Comprar ${product.name}`}
         >
           <ShoppingCart size={16} />
         </button>
       </div>
-    </div>
+    </article>
   );
 };
