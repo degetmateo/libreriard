@@ -74,3 +74,4 @@ export const WholesaleRequestBox: React.FC<{ user: CustomerUserDto; onRequested:
     </div>
   );
 };
+

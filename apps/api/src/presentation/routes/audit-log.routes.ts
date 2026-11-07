@@ -13,3 +13,4 @@ export class AuditLogRoutes {
     return router;
   }
 }
+

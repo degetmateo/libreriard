@@ -14,6 +14,7 @@ export class ProductRoutes {
     // Protected staff operations
     router.post('/', authMiddleware.authenticate, RoleMiddleware.requireStaff, ValidateMiddleware.validate(createProductSchema), controller.create);
     router.put('/:id', authMiddleware.authenticate, RoleMiddleware.requireStaff, ValidateMiddleware.validate(updateProductSchema), controller.update);
+    router.patch('/:id/toggle-active', authMiddleware.authenticate, RoleMiddleware.requireStaff, controller.toggleActive);
     router.delete('/:id', authMiddleware.authenticate, RoleMiddleware.requireStaff, controller.delete);
     return router;
   }

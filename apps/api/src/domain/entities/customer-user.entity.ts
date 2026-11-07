@@ -1,6 +1,6 @@
 import { UUIDv7 } from '../value-objects/uuid-v7.vo';
 import { Email } from '../value-objects/email.vo';
-import { CustomerWholesaleStatus } from '@libreriard/shared';
+import { CustomerWholesaleStatus, AdminUpdateCustomerDto } from '@libreriard/shared';
 
 export interface CustomerUserProps {
   id?: UUIDv7;
@@ -15,6 +15,7 @@ export interface CustomerUserProps {
   wholesaleStatus?: CustomerWholesaleStatus;
   wholesaleMessage?: string;
   isEmailVerified?: boolean;
+  isActive?: boolean;
   verificationToken?: string;
   verificationExpires?: Date;
   resetToken?: string;
@@ -36,6 +37,7 @@ export class CustomerUser {
   private _wholesaleStatus: CustomerWholesaleStatus;
   private _wholesaleMessage?: string;
   private _isEmailVerified: boolean;
+  private _isActive: boolean;
   private _verificationToken?: string;
   private _verificationExpires?: Date;
   private _resetToken?: string;
@@ -56,6 +58,7 @@ export class CustomerUser {
     this._wholesaleStatus = p.wholesaleStatus || CustomerWholesaleStatus.NONE;
     this._wholesaleMessage = p.wholesaleMessage;
     this._isEmailVerified = p.isEmailVerified || false;
+    this._isActive = p.isActive !== undefined ? p.isActive : true;
     this._verificationToken = p.verificationToken;
     this._verificationExpires = p.verificationExpires;
     this._resetToken = p.resetToken;
@@ -76,6 +79,7 @@ export class CustomerUser {
   public get wholesaleStatus(): CustomerWholesaleStatus { return this._wholesaleStatus; }
   public get wholesaleMessage(): string | undefined { return this._wholesaleMessage; }
   public get isEmailVerified(): boolean { return this._isEmailVerified; }
+  public get isActive(): boolean { return this._isActive; }
   public get verificationToken(): string | undefined { return this._verificationToken; }
   public get verificationExpires(): Date | undefined { return this._verificationExpires; }
   public get resetToken(): string | undefined { return this._resetToken; }
@@ -90,9 +94,29 @@ export class CustomerUser {
     this._updatedAt = new Date();
   }
 
-  public requestWholesale(message?: string): void {
+  public toggleActive(active?: boolean): void {
+    this._isActive = active !== undefined ? active : !this._isActive;
+    this._updatedAt = new Date();
+  }
+
+  public adminUpdateDetails(u: AdminUpdateCustomerDto): void {
+    if (u.name) this._name = u.name.trim();
+    if (u.cuitCuil) this._cuitCuil = u.cuitCuil.replace(/[^0-9]/g, '');
+    if (u.email) this._email = Email.create(u.email);
+    if (u.phone !== undefined) this._phone = u.phone.trim();
+    if (u.address !== undefined) this._address = u.address.trim();
+    if (u.postalCode !== undefined) this._postalCode = u.postalCode.trim();
+    if (u.isActive !== undefined) this._isActive = u.isActive;
+    if (u.isWholesaleApproved !== undefined) {
+      this._isWholesaleApproved = u.isWholesaleApproved;
+      this._wholesaleStatus = u.isWholesaleApproved ? CustomerWholesaleStatus.APPROVED : CustomerWholesaleStatus.NONE;
+    }
+    this._updatedAt = new Date();
+  }
+
+  public requestWholesale(msg?: string): void {
     this._wholesaleStatus = CustomerWholesaleStatus.PENDING;
-    this._wholesaleMessage = message;
+    this._wholesaleMessage = msg;
     this._updatedAt = new Date();
   }
 

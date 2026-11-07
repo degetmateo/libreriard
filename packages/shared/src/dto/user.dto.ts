@@ -24,6 +24,7 @@ export interface CustomerUserDto {
   wholesaleStatus: CustomerWholesaleStatus;
   wholesaleMessage?: string;
   isEmailVerified: boolean;
+  isActive: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -43,6 +44,21 @@ export interface UpdateStaffDto {
 }
 
 export interface ResetStaffPasswordDto {
+  newPassword: string;
+}
+
+export interface AdminUpdateCustomerDto {
+  name?: string;
+  cuitCuil?: string;
+  email?: string;
+  phone?: string;
+  address?: string;
+  postalCode?: string;
+  isActive?: boolean;
+  isWholesaleApproved?: boolean;
+}
+
+export interface AdminResetCustomerPasswordDto {
   newPassword: string;
 }
 

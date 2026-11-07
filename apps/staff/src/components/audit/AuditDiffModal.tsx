@@ -40,3 +40,4 @@ export const AuditDiffModal: React.FC<AuditDiffModalProps> = ({ log, isOpen, onC
     </Modal>
   );
 };
+

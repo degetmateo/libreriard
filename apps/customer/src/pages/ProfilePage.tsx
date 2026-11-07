@@ -4,7 +4,16 @@ import { useNavigate } from 'react-router-dom';
 import { OrderDto } from '@libreriard/shared';
 import { OrderService } from '../services/order.service';
 import { WholesaleRequestBox } from '../components/profile/WholesaleRequestBox';
-import { Package, User, ShoppingBag } from 'lucide-react';
+import { User, ShoppingBag, Tag } from 'lucide-react';
+
+const ORDER_STATUS_LABELS: Record<string, string> = {
+  PENDING: 'Pendiente',
+  PREPARING: 'En Preparación',
+  READY: 'Lista para Retiro',
+  CONFIRMED: 'Confirmada',
+  DELIVERED: 'Entregada',
+  CANCELLED: 'Cancelada'
+};
 
 export const ProfilePage: React.FC = () => {
   const { user, reloadUser } = useAuth();
@@ -17,7 +26,7 @@ export const ProfilePage: React.FC = () => {
       navigate('/login');
       return;
     }
-    new OrderService().getMyOrders().then(res => {
+    new OrderService().getMyOrders().then((res) => {
       if (res.success && res.data) setOrders(res.data);
     }).finally(() => setLoading(false));
   }, [user]);
@@ -56,18 +65,30 @@ export const ProfilePage: React.FC = () => {
           <p className="text-xs text-slate-400 py-6 text-center">Aún no has realizado ninguna compra en Librería Rubén Darío.</p>
         ) : (
           <div className="divide-y divide-slate-100">
-            {orders.map(o => (
-              <div key={o.id} className="py-3.5 flex items-center justify-between">
-                <div>
-                  <span className="font-mono font-bold text-sm text-slate-900">{o.orderNumber}</span>
-                  <span className="text-xs text-slate-400 block">{new Date(o.createdAt).toLocaleDateString('es-AR')} • {o.items.length} artículos</span>
+            {orders.map((o) => {
+              const hasDiscount = o.items.some((it) => it.discountApplied);
+              return (
+                <div key={o.id} className="py-3.5 flex items-center justify-between">
+                  <div>
+                    <span className="font-mono font-bold text-sm text-slate-900">{o.orderNumber}</span>
+                    <span className="text-xs text-slate-400 block">
+                      {new Date(o.createdAt).toLocaleDateString('es-AR')} • {o.items.length} artículos
+                      {hasDiscount && (
+                        <span className="inline-flex items-center gap-1 text-[10px] text-emerald-600 font-bold ml-2">
+                          <Tag size={10} /> Con descuento por cantidad
+                        </span>
+                      )}
+                    </span>
+                  </div>
+                  <div className="text-right">
+                    <span className="font-black text-sm text-slate-900 block">${o.total.toLocaleString('es-AR')}</span>
+                    <span className="inline-block px-2.5 py-0.5 bg-slate-100 text-slate-700 rounded-md text-[10px] font-bold mt-0.5">
+                      {ORDER_STATUS_LABELS[o.status] || o.status}
+                    </span>
+                  </div>
                 </div>
-                <div className="text-right">
-                  <span className="font-black text-sm text-slate-900 block">${o.total.toLocaleString('es-AR')}</span>
-                  <span className="inline-block px-2 py-0.5 bg-slate-100 text-slate-700 rounded-md text-[10px] font-bold mt-0.5">{o.status}</span>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>

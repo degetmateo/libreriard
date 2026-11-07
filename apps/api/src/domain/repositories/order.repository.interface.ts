@@ -18,3 +18,4 @@ export interface IOrderRepository {
   findMany(params: OrderFilterParams): Promise<{ items: Order[]; total: number }>;
   save(order: Order): Promise<void>;
 }
+

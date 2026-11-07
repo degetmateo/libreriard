@@ -18,3 +18,4 @@ export interface ICustomerUserRepository {
   findMany(params: CustomerFilterParams): Promise<{ items: CustomerUser[]; total: number }>;
   save(customer: CustomerUser): Promise<void>;
 }
+

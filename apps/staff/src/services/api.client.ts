@@ -1,12 +1,15 @@
 import { ApiResponse } from '@libreriard/shared';
 
+const TOKEN_KEY = 'rd_staff_access_token';
+
 export class ApiClient {
   private static instance: ApiClient;
   private accessToken: string | null = null;
   private readonly baseUrl: string;
 
   private constructor() {
-    this.baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
+    this.baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/v1';
+    this.accessToken = sessionStorage.getItem(TOKEN_KEY);
   }
 
   public static getInstance(): ApiClient {
@@ -16,6 +19,11 @@ export class ApiClient {
 
   public setToken(token: string | null): void {
     this.accessToken = token;
+    if (token) {
+      sessionStorage.setItem(TOKEN_KEY, token);
+    } else {
+      sessionStorage.removeItem(TOKEN_KEY);
+    }
   }
 
   public getToken(): string | null {
@@ -42,7 +50,8 @@ export class ApiClient {
       credentials: 'include'
     });
 
-    if (response.status === 401 && !endpoint.includes('/refresh') && !endpoint.includes('/login')) {
+    const isAuthRoute = endpoint.includes('/refresh') || endpoint.includes('/login');
+    if ((response.status === 401 || response.status === 403) && !isAuthRoute) {
       const refreshed = await this.refreshToken();
       if (refreshed) {
         headers['Authorization'] = `Bearer ${this.accessToken}`;
@@ -65,8 +74,10 @@ export class ApiClient {
         this.setToken(data.data.accessToken);
         return true;
       }
+      this.setToken(null);
       return false;
     } catch {
+      this.setToken(null);
       return false;
     }
   }

@@ -6,3 +6,4 @@ export interface IEmailService {
   sendOrderConfirmationEmail(order: OrderDto, bankDetails?: BankTransferDetailsDto): Promise<void>;
   sendWholesaleRequestNotification(customerName: string, customerEmail: string, cuitCuil: string, message?: string): Promise<void>;
 }
+

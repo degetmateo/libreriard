@@ -26,10 +26,10 @@ export const DashboardPage: React.FC = () => {
   }, []);
 
   const cards = [
-    { title: 'Productos en Catálogo', value: stats.products, icon: Package, to: '/productos', color: 'text-cyan-400' },
-    { title: 'Órdenes Pendientes', value: stats.pendingOrders, icon: ShoppingCart, to: '/ordenes', color: 'text-amber-400' },
-    { title: 'Clientes Registrados', value: stats.customers, icon: Users, to: '/clientes', color: 'text-emerald-400' },
-    { title: 'Solicitudes Mayoristas', value: stats.wholesalePending, icon: AlertCircle, to: '/clientes?filter=wholesale', color: 'text-rose-400' }
+    { title: 'Productos en Catálogo', value: stats.products, icon: Package, to: '/products', color: 'text-cyan-400' },
+    { title: 'Órdenes Pendientes', value: stats.pendingOrders, icon: ShoppingCart, to: '/orders', color: 'text-amber-400' },
+    { title: 'Clientes Registrados', value: stats.customers, icon: Users, to: '/customers', color: 'text-emerald-400' },
+    { title: 'Solicitudes Mayoristas', value: stats.wholesalePending, icon: AlertCircle, to: '/customers?filter=wholesale', color: 'text-rose-400' }
   ];
 
   if (loading) {

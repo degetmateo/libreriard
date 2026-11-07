@@ -35,3 +35,4 @@ export interface AuditLogQueryDto {
   page?: number;
   limit?: number;
 }
+

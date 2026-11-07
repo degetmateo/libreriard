@@ -36,3 +36,4 @@ export class OrderNumber {
     return this.value === other.toValue();
   }
 }
+

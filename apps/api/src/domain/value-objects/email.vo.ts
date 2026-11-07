@@ -30,3 +30,4 @@ export class Email {
     return this.value === other.toValue();
   }
 }
+

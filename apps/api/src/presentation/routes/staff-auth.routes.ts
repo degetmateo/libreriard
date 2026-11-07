@@ -15,3 +15,4 @@ export class StaffAuthRoutes {
     return router;
   }
 }
+

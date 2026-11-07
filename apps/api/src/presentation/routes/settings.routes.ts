@@ -3,15 +3,18 @@ import { SettingsController } from '../controllers/settings.controller';
 import { AuthMiddleware } from '../middlewares/auth.middleware';
 import { RoleMiddleware } from '../middlewares/role.middleware';
 import { ValidateMiddleware } from '../middlewares/validate.middleware';
-import { updateBankDetailsSchema } from '../schemas/settings.schema';
+import {
+  updateBankDetailsSchema,
+  updateLegalTextsSchema,
+  updateFooterContactSchema,
+  catalogItemSchema
+} from '../schemas/settings.schema';
 
 export class SettingsRoutes {
   public static create(controller: SettingsController, authMiddleware: AuthMiddleware): Router {
     const router = Router();
-    // Public retrieval so customer checkout can display bank transfer details
     router.get('/', controller.getSettings);
 
-    // Admin-only update
     router.put(
       '/bank-details',
       authMiddleware.authenticate,
@@ -19,6 +22,39 @@ export class SettingsRoutes {
       ValidateMiddleware.validate(updateBankDetailsSchema),
       controller.updateBankDetails
     );
+
+    router.put(
+      '/legal',
+      authMiddleware.authenticate,
+      RoleMiddleware.requireAdmin,
+      ValidateMiddleware.validate(updateLegalTextsSchema),
+      controller.updateLegalTexts
+    );
+
+    router.put(
+      '/contact',
+      authMiddleware.authenticate,
+      RoleMiddleware.requireAdmin,
+      ValidateMiddleware.validate(updateFooterContactSchema),
+      controller.updateFooterContact
+    );
+
+    router.post(
+      '/categories',
+      authMiddleware.authenticate,
+      RoleMiddleware.requireStaff,
+      ValidateMiddleware.validate(catalogItemSchema),
+      controller.addCategory
+    );
+
+    router.post(
+      '/tags',
+      authMiddleware.authenticate,
+      RoleMiddleware.requireStaff,
+      ValidateMiddleware.validate(catalogItemSchema),
+      controller.addTag
+    );
+
     return router;
   }
 }

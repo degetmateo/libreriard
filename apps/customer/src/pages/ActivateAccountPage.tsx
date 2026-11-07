@@ -68,3 +68,4 @@ export const ActivateAccountPage: React.FC = () => {
     </div>
   );
 };
+

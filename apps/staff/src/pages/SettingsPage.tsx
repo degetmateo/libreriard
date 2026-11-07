@@ -1,80 +1,73 @@
 import React, { useEffect, useState } from 'react';
-import { BankTransferDetailsDto } from '@libreriard/shared';
+import { SystemSettingsDto } from '@libreriard/shared';
 import { SettingsService } from '../services/settings.service';
-import { Save, CheckCircle } from 'lucide-react';
+import { BankSettingsTab } from '../components/settings/BankSettingsTab';
+import { ContactSettingsTab } from '../components/settings/ContactSettingsTab';
+import { LegalSettingsTab } from '../components/settings/LegalSettingsTab';
+import { Building2, MapPin, FileText } from 'lucide-react';
+
+type TabType = 'bank' | 'contact' | 'legal';
 
 export const SettingsPage: React.FC = () => {
-  const [details, setDetails] = useState<BankTransferDetailsDto>({
-    bankName: '', accountHolder: '', cuitCuil: '', cbu: '', alias: '', accountType: '', notes: ''
-  });
+  const [activeTab, setActiveTab] = useState<TabType>('bank');
+  const [settings, setSettings] = useState<SystemSettingsDto | null>(null);
   const [loading, setLoading] = useState(true);
-  const [saved, setSaved] = useState(false);
   const settingsService = new SettingsService();
 
-  useEffect(() => {
-    settingsService.getSettings().then(res => {
-      if (res.success && res.data) setDetails(res.data.bankTransferDetails);
+  const loadSettings = () => {
+    settingsService.getSettings().then((res) => {
+      if (res.success && res.data) setSettings(res.data);
     }).finally(() => setLoading(false));
-  }, []);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSaved(false);
-    const res = await settingsService.updateBankDetails(details);
-    if (res.success) {
-      setSaved(true);
-      setTimeout(() => setSaved(false), 3000);
-    }
   };
 
-  if (loading) return <div className="p-8 text-center text-slate-500">Cargando configuración...</div>;
+  useEffect(() => {
+    loadSettings();
+  }, []);
+
+  if (loading || !settings) {
+    return <div className="p-8 text-center text-slate-500">Cargando configuración...</div>;
+  }
+
+  const tabs: { id: TabType; label: string; icon: React.ReactNode }[] = [
+    { id: 'bank', label: 'Datos Bancarios', icon: <Building2 size={16} /> },
+    { id: 'contact', label: 'Contacto y Ubicación Footer', icon: <MapPin size={16} /> },
+    { id: 'legal', label: 'Términos y Privacidad', icon: <FileText size={16} /> }
+  ];
 
   return (
-    <div className="max-w-2xl bg-slate-950 border border-slate-800 rounded-xl p-6">
-      <h3 className="text-base font-bold text-white mb-1">Datos para Transferencias Bancarias</h3>
-      <p className="text-xs text-slate-400 mb-6">Esta información se mostrará a los clientes al momento de finalizar una compra con método de pago TRANSFERENCIA.</p>
+    <div className="max-w-3xl space-y-4">
+      <div className="flex border-b border-slate-800 gap-2">
+        {tabs.map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={`flex items-center gap-2 px-4 py-2.5 text-xs font-semibold rounded-t-lg transition border-b-2 -mb-px ${
+              activeTab === tab.id
+                ? 'border-cyan-400 text-cyan-400 bg-slate-900/50'
+                : 'border-transparent text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            {tab.icon}
+            <span>{tab.label}</span>
+          </button>
+        ))}
+      </div>
 
-      {saved && (
-        <div className="mb-4 p-3 bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 rounded-lg flex items-center space-x-2 text-xs">
-          <CheckCircle size={16} /> <span>Datos bancarios guardados correctamente.</span>
-        </div>
-      )}
-
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label className="text-xs text-slate-400 font-medium">Banco</label>
-            <input required value={details.bankName} onChange={e => setDetails({ ...details, bankName: e.target.value })} className="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm text-white" />
-          </div>
-          <div>
-            <label className="text-xs text-slate-400 font-medium">Titular de la Cuenta</label>
-            <input required value={details.accountHolder} onChange={e => setDetails({ ...details, accountHolder: e.target.value })} className="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm text-white" />
-          </div>
-          <div>
-            <label className="text-xs text-slate-400 font-medium">CUIT / CUIL</label>
-            <input required value={details.cuitCuil} onChange={e => setDetails({ ...details, cuitCuil: e.target.value })} className="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm text-white" />
-          </div>
-          <div>
-            <label className="text-xs text-slate-400 font-medium">Tipo de Cuenta</label>
-            <input required value={details.accountType} onChange={e => setDetails({ ...details, accountType: e.target.value })} className="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm text-white" />
-          </div>
-          <div>
-            <label className="text-xs text-slate-400 font-medium">CBU (22 dígitos)</label>
-            <input required maxLength={22} value={details.cbu} onChange={e => setDetails({ ...details, cbu: e.target.value })} className="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm font-mono text-white" />
-          </div>
-          <div>
-            <label className="text-xs text-slate-400 font-medium">Alias CBU</label>
-            <input required value={details.alias} onChange={e => setDetails({ ...details, alias: e.target.value })} className="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm font-mono text-cyan-400 uppercase" />
-          </div>
-        </div>
-        <div>
-          <label className="text-xs text-slate-400 font-medium">Instrucciones Adicionales</label>
-          <textarea rows={3} value={details.notes} onChange={e => setDetails({ ...details, notes: e.target.value })} className="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm text-white" placeholder="Ej: Enviar comprobante por WhatsApp con número de orden..." />
-        </div>
-        <button type="submit" className="px-5 py-2.5 bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-bold rounded-lg text-sm flex items-center space-x-2 transition">
-          <Save size={16} /> <span>Guardar Cambios</span>
-        </button>
-      </form>
+      <div className="bg-slate-950 border border-slate-800 rounded-xl p-6">
+        {activeTab === 'bank' && (
+          <BankSettingsTab initialData={settings.bankTransferDetails} onSaved={loadSettings} />
+        )}
+        {activeTab === 'contact' && (
+          <ContactSettingsTab initialData={settings.footerContact} onSaved={loadSettings} />
+        )}
+        {activeTab === 'legal' && (
+          <LegalSettingsTab
+            initialTerms={settings.termsAndConditions}
+            initialPrivacy={settings.privacyPolicy}
+            onSaved={loadSettings}
+          />
+        )}
+      </div>
     </div>
   );
 };

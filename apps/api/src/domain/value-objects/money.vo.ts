@@ -33,3 +33,4 @@ export class Money {
     return this.amount === other.getAmount();
   }
 }
+

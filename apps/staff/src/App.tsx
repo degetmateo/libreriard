@@ -25,12 +25,12 @@ export const App: React.FC = () => {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
         <Route index element={<DashboardPage />} />
-        <Route path="productos" element={<ProductsPage />} />
-        <Route path="ordenes" element={<OrdersPage />} />
-        <Route path="clientes" element={<CustomersPage />} />
-        <Route path="personal" element={<ProtectedRoute adminOnly><StaffPage /></ProtectedRoute>} />
-        <Route path="ajustes-banco" element={<ProtectedRoute adminOnly><SettingsPage /></ProtectedRoute>} />
-        <Route path="logs" element={<ProtectedRoute adminOnly><AuditLogsPage /></ProtectedRoute>} />
+        <Route path="products" element={<ProductsPage />} />
+        <Route path="orders" element={<OrdersPage />} />
+        <Route path="customers" element={<CustomersPage />} />
+        <Route path="staff" element={<ProtectedRoute adminOnly><StaffPage /></ProtectedRoute>} />
+        <Route path="settings" element={<ProtectedRoute adminOnly><SettingsPage /></ProtectedRoute>} />
+        <Route path="audit-logs" element={<ProtectedRoute adminOnly><AuditLogsPage /></ProtectedRoute>} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

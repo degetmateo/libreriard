@@ -6,7 +6,7 @@ import { IEmailService } from '../../infrastructure/email/email-service.interfac
 import { OrderFactory } from '../../domain/factories/order.factory';
 import { OrderMapper } from '../../infrastructure/database/mappers/order.mapper';
 import { UUIDv7 } from '../../domain/value-objects/uuid-v7.vo';
-import { CreateOrderDto, OrderDto, OrderStatus, OrderType, OrderItemDto } from '@libreriard/shared';
+import { CreateOrderDto, OrderDto, OrderStatus, OrderType, OrderItemDto, PaymentMethod } from '@libreriard/shared';
 
 export class OrderService {
   constructor(
@@ -22,6 +22,10 @@ export class OrderService {
     const customer = await this.customerRepo.findById(customerId);
     if (!customer) throw new Error('Cliente no encontrado.');
 
+    if (dto.paymentMethod === PaymentMethod.TRANSFERENCIA && !dto.transferReceiptUrl) {
+      throw new Error('Debe adjuntar el comprobante de transferencia bancaria para confirmar la orden.');
+    }
+
     const orderType = customer.isWholesaleApproved ? OrderType.WHOLESALE : OrderType.RETAIL;
     const items: OrderItemDto[] = [];
 
@@ -31,15 +35,35 @@ export class OrderService {
         throw new Error(`Producto no disponible: ${itemInput.productId}`);
       }
 
-      let unitPrice = orderType === OrderType.WHOLESALE ? product.wholesalePrice.getAmount() : product.retailPrice.getAmount();
+      if (orderType === OrderType.WHOLESALE) {
+        if (!product.wholesalePrice || product.wholesalePrice.getAmount() <= 0) {
+          throw new Error(`El producto "${product.name}" no tiene precio mayorista configurado y no puede agregarse a una orden mayorista.`);
+        }
+      } else {
+        if (!product.retailPrice || product.retailPrice.getAmount() <= 0) {
+          throw new Error(`El producto "${product.name}" no tiene precio minorista configurado y no puede agregarse a una orden minorista.`);
+        }
+      }
+
+      let unitPrice = 0;
+      let originalUnitPrice: number | undefined;
+      let discountApplied = false;
       let subTypeName: string | undefined;
 
-      if (itemInput.subTypeId) {
-        const variant = product.subTypes.find(v => v.id === itemInput.subTypeId);
-        if (variant) {
-          unitPrice += variant.priceModifier || 0;
-          subTypeName = variant.name;
+      const variant = itemInput.subTypeId ? product.subTypes.find(v => v.id === itemInput.subTypeId) : undefined;
+      const variantModifier = variant?.priceModifier || 0;
+      if (variant) subTypeName = variant.name;
+
+      if (orderType === OrderType.WHOLESALE) {
+        unitPrice = product.wholesalePrice!.getAmount() + variantModifier;
+      } else {
+        const retailCalc = product.calculateRetailUnitPrice(itemInput.quantity);
+        if (!retailCalc) {
+          throw new Error(`El producto "${product.name}" no tiene precio minorista configurado.`);
         }
+        unitPrice = retailCalc.unitPrice + variantModifier;
+        originalUnitPrice = retailCalc.originalUnitPrice + variantModifier;
+        discountApplied = retailCalc.discountApplied;
       }
 
       const subtotal = Math.round(unitPrice * itemInput.quantity * 100) / 100;
@@ -49,6 +73,8 @@ export class OrderService {
         subTypeId: itemInput.subTypeId,
         subTypeName,
         unitPrice,
+        originalUnitPrice: discountApplied ? originalUnitPrice : undefined,
+        discountApplied,
         quantity: itemInput.quantity,
         subtotal
       });
@@ -70,6 +96,8 @@ export class OrderService {
       paymentMethod: dto.paymentMethod,
       deliveryMethod: dto.deliveryMethod,
       deliveryAddress: dto.deliveryAddress || customer.address,
+      transferReceiptUrl: dto.transferReceiptUrl,
+      transferReceiptName: dto.transferReceiptName,
       notes: dto.notes
     });
 
@@ -84,16 +112,12 @@ export class OrderService {
 
   public async getOrders(params: OrderFilterParams): Promise<{ items: OrderDto[]; total: number }> {
     const result = await this.orderRepo.findMany(params);
-    return {
-      items: result.items.map(o => OrderMapper.toDto(o)),
-      total: result.total
-    };
+    return { items: result.items.map(o => OrderMapper.toDto(o)), total: result.total };
   }
 
   public async updateOrderStatus(idStr: string, status: OrderStatus, notes?: string): Promise<OrderDto> {
     const order = await this.orderRepo.findById(UUIDv7.fromString(idStr));
     if (!order) throw new Error('Orden no encontrada.');
-
     order.updateStatus(status, notes);
     await this.orderRepo.save(order);
     return OrderMapper.toDto(order);

@@ -68,3 +68,4 @@ describe('Domain Entities & Factories', () => {
     expect(product.barcode).toBe('7791234567890');
   });
 });
+

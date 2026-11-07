@@ -72,3 +72,4 @@ export class MongoProductRepository implements IProductRepository {
     await this.collection.deleteOne({ _id: BsonUuidHelper.toBsonUuid(id) });
   }
 }
+

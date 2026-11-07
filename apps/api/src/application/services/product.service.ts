@@ -10,10 +10,7 @@ export class ProductService {
 
   public async getProducts(params: ProductFilterParams): Promise<{ items: ProductDto[]; total: number }> {
     const result = await this.productRepo.findMany(params);
-    return {
-      items: result.items.map(p => ProductMapper.toDto(p)),
-      total: result.total
-    };
+    return { items: result.items.map(p => ProductMapper.toDto(p)), total: result.total };
   }
 
   public async getProductById(idStr: string): Promise<ProductDto> {
@@ -23,11 +20,10 @@ export class ProductService {
   }
 
   public async createProduct(dto: CreateProductDto): Promise<ProductDto> {
-    const existing = await this.productRepo.findByBarcode(dto.barcode.trim());
-    if (existing) {
-      throw new Error(`Ya existe un producto con el código de barras: ${dto.barcode}`);
+    if (dto.barcode && dto.barcode.trim()) {
+      const existing = await this.productRepo.findByBarcode(dto.barcode.trim());
+      if (existing) throw new Error(`Ya existe un producto con el código de barras: ${dto.barcode}`);
     }
-
     const product = ProductFactory.create(dto);
     await this.productRepo.save(product);
     return ProductMapper.toDto(product);
@@ -37,7 +33,7 @@ export class ProductService {
     const product = await this.productRepo.findById(UUIDv7.fromString(idStr));
     if (!product) throw new Error('Producto no encontrado.');
 
-    if (dto.barcode && dto.barcode.trim() !== product.barcode) {
+    if (dto.barcode && dto.barcode.trim() && dto.barcode.trim() !== product.barcode) {
       const existing = await this.productRepo.findByBarcode(dto.barcode.trim());
       if (existing && !existing.id.equals(product.id)) {
         throw new Error(`Ya existe otro producto con el código de barras: ${dto.barcode}`);
@@ -47,9 +43,10 @@ export class ProductService {
     product.updateDetails({
       name: dto.name,
       description: dto.description,
-      barcode: dto.barcode,
-      retailPrice: dto.retailPrice !== undefined ? Money.from(dto.retailPrice) : undefined,
-      wholesalePrice: dto.wholesalePrice !== undefined ? Money.from(dto.wholesalePrice) : undefined,
+      barcode: dto.barcode !== undefined ? dto.barcode : product.barcode,
+      retailPrice: (dto.retailPrice !== undefined && dto.retailPrice !== null) ? Money.from(dto.retailPrice) : dto.retailPrice === null ? null : product.retailPrice,
+      wholesalePrice: (dto.wholesalePrice !== undefined && dto.wholesalePrice !== null) ? Money.from(dto.wholesalePrice) : dto.wholesalePrice === null ? null : product.wholesalePrice,
+      retailPriceTiers: dto.retailPriceTiers !== undefined ? dto.retailPriceTiers : product.retailPriceTiers,
       images: dto.images,
       subTypes: dto.subTypes,
       supplier: dto.supplier,
@@ -58,6 +55,14 @@ export class ProductService {
       isActive: dto.isActive
     });
 
+    await this.productRepo.save(product);
+    return ProductMapper.toDto(product);
+  }
+
+  public async toggleProductActive(idStr: string): Promise<ProductDto> {
+    const product = await this.productRepo.findById(UUIDv7.fromString(idStr));
+    if (!product) throw new Error('Producto no encontrado.');
+    product.toggleActive();
     await this.productRepo.save(product);
     return ProductMapper.toDto(product);
   }

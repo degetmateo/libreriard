@@ -16,3 +16,4 @@ export class CustomerAuthRoutes {
     return router;
   }
 }
+

@@ -4,7 +4,8 @@ import { UserType, StaffRole } from '@libreriard/shared';
 
 export class RoleMiddleware {
   public static requireStaff(req: AuthenticatedRequest, res: Response, next: NextFunction): void {
-    if (!req.user || req.user.userType !== UserType.STAFF) {
+    const userType = String(req.user?.userType || '').toUpperCase();
+    if (!req.user || userType !== UserType.STAFF) {
       res.status(403).json({
         success: false,
         message: 'Acceso denegado. Se requiere cuenta de personal del staff.'
@@ -15,7 +16,9 @@ export class RoleMiddleware {
   }
 
   public static requireAdmin(req: AuthenticatedRequest, res: Response, next: NextFunction): void {
-    if (!req.user || req.user.userType !== UserType.STAFF || req.user.role !== StaffRole.ADMIN) {
+    const userType = String(req.user?.userType || '').toUpperCase();
+    const role = String(req.user?.role || '').toUpperCase();
+    if (!req.user || userType !== UserType.STAFF || role !== StaffRole.ADMIN) {
       res.status(403).json({
         success: false,
         message: 'Acceso denegado. Se requieren permisos de administrador.'
@@ -26,7 +29,8 @@ export class RoleMiddleware {
   }
 
   public static requireCustomer(req: AuthenticatedRequest, res: Response, next: NextFunction): void {
-    if (!req.user || req.user.userType !== UserType.CUSTOMER) {
+    const userType = String(req.user?.userType || '').toUpperCase();
+    if (!req.user || userType !== UserType.CUSTOMER) {
       res.status(403).json({
         success: false,
         message: 'Acceso denegado. Esta acción está reservada a clientes.'

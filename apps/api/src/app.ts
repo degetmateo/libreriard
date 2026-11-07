@@ -48,10 +48,11 @@ export class App {
       res.json({ status: 'ok', timestamp: new Date().toISOString() });
     });
 
-    this.app.use('/api/v1', ApiRouter.create());
+    this.app.use(['/v1'], ApiRouter.create());
   }
 
   private configureErrorHandling(): void {
     this.app.use(ErrorHandlerMiddleware.handle);
   }
 }
+

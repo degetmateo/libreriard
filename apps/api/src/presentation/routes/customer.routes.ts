@@ -10,6 +10,9 @@ export class CustomerRoutes {
 
     router.get('/', RoleMiddleware.requireStaff, controller.getCustomers);
     router.get('/:id', RoleMiddleware.requireStaff, controller.getById);
+    router.put('/:id', RoleMiddleware.requireAdmin, controller.adminUpdateCustomer);
+    router.post('/:id/reset-password', RoleMiddleware.requireAdmin, controller.adminResetPassword);
+    router.patch('/:id/toggle-active', RoleMiddleware.requireAdmin, controller.toggleCustomerActive);
     router.post('/wholesale-request', RoleMiddleware.requireCustomer, controller.requestWholesale);
     router.put('/:id/review-wholesale', RoleMiddleware.requireAdmin, controller.reviewWholesale);
     return router;

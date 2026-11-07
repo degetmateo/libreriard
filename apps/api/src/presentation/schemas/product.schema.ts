@@ -14,18 +14,24 @@ export const productImageSchema = z.object({
   isPrimary: z.boolean().default(false)
 });
 
+export const retailPriceTierSchema = z.object({
+  minQuantity: z.number().int().min(2, 'La cantidad mínima debe ser al menos 2.'),
+  unitPrice: z.number().positive('El precio unitario debe ser mayor a 0.')
+});
+
 export const createProductSchema = z.object({
-  name: z.string().min(2, 'El nombre del producto es obligatorio.'),
-  description: z.string().default(''),
-  barcode: z.string().min(1, 'El código de barras es obligatorio.'),
-  retailPrice: z.number().min(0, 'El precio minorista debe ser mayor o igual a 0.'),
-  wholesalePrice: z.number().min(0, 'El precio mayorista debe ser mayor o igual a 0.'),
+  name: z.string().min(1, 'El nombre del producto es obligatorio.'),
+  description: z.string().optional(),
+  barcode: z.string().optional(),
+  retailPrice: z.number().nullable().optional(),
+  wholesalePrice: z.number().nullable().optional(),
+  retailPriceTiers: z.array(retailPriceTierSchema).optional(),
   images: z.array(productImageSchema).optional(),
   subTypes: z.array(productVariantSchema).optional(),
-  supplier: z.string().default(''),
-  categories: z.array(z.string()).default([]),
-  tags: z.array(z.string()).default([]),
-  isActive: z.boolean().default(true)
+  supplier: z.string().optional(),
+  categories: z.array(z.string()).optional(),
+  tags: z.array(z.string()).optional(),
+  isActive: z.boolean().optional()
 });
 
 export const updateProductSchema = createProductSchema.partial();

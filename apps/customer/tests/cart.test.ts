@@ -38,4 +38,21 @@ describe('Customer Cart Calculations', () => {
     const total = unitPrice * qty; // 37000
     expect(total).toBe(37000);
   });
+
+  it('should compute tiered retail total when quantity meets tier threshold', () => {
+    const tieredProduct: ProductDto = {
+      ...dummyProduct,
+      retailPrice: 200,
+      retailPriceTiers: [
+        { minQuantity: 10, unitPrice: 180 },
+        { minQuantity: 50, unitPrice: 150 }
+      ]
+    };
+
+    const qty = 10;
+    const tier = tieredProduct.retailPriceTiers!.find(t => qty >= t.minQuantity);
+    expect(tier?.unitPrice).toBe(180);
+    expect(tier!.unitPrice * qty).toBe(1800);
+  });
 });
+

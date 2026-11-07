@@ -32,7 +32,7 @@ export class CloudinaryStorageService implements IStorageService {
 
     return new Promise((resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream(
-        { folder: 'libreria-ruben-dario', resource_type: 'image' },
+        { folder: 'libreria-ruben-dario', resource_type: 'auto' },
         (error, result) => {
           if (error || !result) {
             return reject(error || new Error('Fallo al subir imagen a Cloudinary'));
@@ -52,3 +52,4 @@ export class CloudinaryStorageService implements IStorageService {
     await cloudinary.uploader.destroy(publicId);
   }
 }
+

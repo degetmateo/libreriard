@@ -11,6 +11,9 @@ export const customerRegisterSchema = z.object({
   cuitCuil: z.string().min(10, 'El CUIT/CUIL debe tener al menos 10 dígitos.'),
   email: z.string().email('El correo electrónico no es válido.'),
   password: z.string().min(6, 'La contraseña debe tener al menos 6 caracteres.'),
+  acceptTerms: z.boolean().refine(val => val === true, {
+    message: 'Debe aceptar los Términos y Condiciones y la Política de Privacidad.'
+  }),
   phone: z.string().optional(),
   address: z.string().optional(),
   postalCode: z.string().optional()

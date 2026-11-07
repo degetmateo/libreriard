@@ -27,12 +27,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           if (p.success && p.data) {
             setUser(p.data);
             localStorage.setItem('rd_staff_user', JSON.stringify(p.data));
+          } else {
+            setUser(null);
+            localStorage.removeItem('rd_staff_user');
           }
+        }).catch(() => {
+          setUser(null);
+          localStorage.removeItem('rd_staff_user');
         });
       } else {
         setUser(null);
         localStorage.removeItem('rd_staff_user');
       }
+    }).catch(() => {
+      setUser(null);
+      localStorage.removeItem('rd_staff_user');
     }).finally(() => setLoading(false));
   }, []);
 

@@ -11,18 +11,30 @@ export interface TokenPayload {
 }
 
 export class JwtTokenProvider {
+  private sanitizePayload(payload: TokenPayload): Record<string, unknown> {
+    return {
+      sub: payload.sub,
+      email: payload.email,
+      userType: payload.userType,
+      role: payload.role,
+      isWholesaleApproved: payload.isWholesaleApproved
+    };
+  }
+
   public generateAccessToken(payload: TokenPayload): string {
+    const clean = this.sanitizePayload(payload);
     const options: SignOptions = {
       expiresIn: EnvConfig.JWT_ACCESS_EXPIRES_IN as jwt.SignOptions['expiresIn']
     };
-    return jwt.sign(payload, EnvConfig.JWT_ACCESS_SECRET, options);
+    return jwt.sign(clean, EnvConfig.JWT_ACCESS_SECRET, options);
   }
 
   public generateRefreshToken(payload: TokenPayload): string {
+    const clean = this.sanitizePayload(payload);
     const options: SignOptions = {
       expiresIn: EnvConfig.JWT_REFRESH_EXPIRES_IN as jwt.SignOptions['expiresIn']
     };
-    return jwt.sign(payload, EnvConfig.JWT_REFRESH_SECRET, options);
+    return jwt.sign(clean, EnvConfig.JWT_REFRESH_SECRET, options);
   }
 
   public verifyAccessToken(token: string): TokenPayload {

@@ -9,12 +9,12 @@ export const Layout: React.FC = () => {
 
   const getPageTitle = (path: string): string => {
     if (path === '/') return 'Panel General';
-    if (path.startsWith('/productos')) return 'Catálogo de Productos';
-    if (path.startsWith('/ordenes')) return 'Gestión de Órdenes';
-    if (path.startsWith('/clientes')) return 'Gestión de Clientes';
-    if (path.startsWith('/personal')) return 'Gestión de Personal Staff';
-    if (path.startsWith('/ajustes-banco')) return 'Ajustes de Transferencia';
-    if (path.startsWith('/logs')) return 'Auditoría y Logs del Sistema';
+    if (path.startsWith('/products')) return 'Catálogo de Productos';
+    if (path.startsWith('/orders')) return 'Gestión de Órdenes';
+    if (path.startsWith('/customers')) return 'Gestión de Clientes';
+    if (path.startsWith('/staff')) return 'Gestión de Personal Staff';
+    if (path.startsWith('/settings')) return 'Configuración';
+    if (path.startsWith('/audit-logs')) return 'Auditoría y Logs del Sistema';
     return 'Librería Rubén Darío';
   };
 

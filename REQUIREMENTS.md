@@ -83,8 +83,8 @@ The codebase strictly adheres to the following principles:
 - `createdAt`: Date
 - `updatedAt`: Date
 - **Permissions**:
-  - `ADMIN`: Full access to create/update/delete staff, reset staff passwords, view audit logs, manage system settings (bank details), approve wholesale requests, and manage products/customers/orders.
-  - `EMPLOYEE`: Access to manage products, customers, and orders. Cannot manage other staff, view audit logs, or edit bank settings.
+  - `ADMIN`: Full access to create/update/delete staff, reset staff passwords, view audit logs, manage system settings (bank details, contact/footer info, legal texts), manage customer accounts (edit details, reset customer passwords, toggle active status), approve wholesale requests, and manage products/orders.
+  - `EMPLOYEE`: Access to manage products, categories, tags, and orders. Cannot manage other staff, customer accounts, view audit logs, or edit system settings.
 
 #### Customer (`CustomerUser`)
 - `_id`: UUIDv7 (BSON Binary Subtype 4)
@@ -95,6 +95,7 @@ The codebase strictly adheres to the following principles:
 - `phone`: string (optional)
 - `address`: string (optional)
 - `postalCode`: string (optional)
+- `isActive`: boolean (default: `true`, can be deactivated by Admin)
 - `isWholesaleApproved`: boolean (default: `false` -> Retail customer)
 - `wholesaleRequest`:
   - `requestedAt`: Date (optional)
@@ -107,20 +108,22 @@ The codebase strictly adheres to the following principles:
 - `passwordResetTokenExpiresAt`: Date (optional)
 - `createdAt`: Date
 - `updatedAt`: Date
+- **Registration Agreement**: Customers must accept Terms & Conditions and Privacy Policy upon registration.
 
 ### 4.3 Products & Catalog (`Product`)
 - `_id`: UUIDv7 (BSON Binary Subtype 4)
-- `name`: string
-- `description`: string
-- `barcode`: string (código de barras, indexed)
-- `retailPrice`: number (precio minorista)
-- `wholesalePrice`: number (precio mayorista)
-- `images`: array of Cloudinary image objects `{ url, publicId, isPrimary }`
+- `name`: string (Mandatory)
+- `description`: string (optional)
+- `barcode`: string (optional, barcode scanner support)
+- `retailPrice`: number (optional; base retail price, if not set product cannot be added to retail orders)
+- `wholesalePrice`: number (optional; if not set, product cannot be added to wholesale orders)
+- `retailPriceTiers`: array of `{ minQuantity: number, unitPrice: number }` (Escalas minoristas por volumen; permite descuentos automáticos por cantidad)
+- `images`: array of Cloudinary image objects `{ url, publicId, isPrimary }` (pueden ser eliminadas con sincronización a Cloudinary)
 - `subTypes`: array of variants `{ id, name, sku, priceModifier, barcode }`
 - `supplier`: string (proveedor)
-- `categories`: array of strings (e.g., `["Escolar", "Cuadernos"]`)
-- `tags`: array of strings (e.g., `["oferta", "rayado", "a4"]`)
-- `isActive`: boolean (default: `true`)
+- `categories`: array of strings linked via Catalog Metadata
+- `tags`: array of strings linked via Catalog Metadata
+- `isActive`: boolean (default: `true`, can be toggled by Staff)
 - `createdAt`: Date
 - `updatedAt`: Date
 
@@ -135,15 +138,19 @@ The codebase strictly adheres to the following principles:
   - `productName`: string
   - `subTypeId`: string (optional)
   - `subTypeName`: string (optional)
-  - `unitPrice`: number
+  - `unitPrice`: number (precio unitario efectivo cobrado)
+  - `originalUnitPrice`: number (opcional; precio unitario base si aplicó escala de descuento)
+  - `discountApplied`: boolean (indica si aplicó descuento por cantidad en precio minorista)
   - `quantity`: number
   - `subtotal`: number
 - `subtotal`: number
 - `discount`: number
 - `total`: number
-- `paymentMethod`: `TRANSFERENCIA` | `EFECTIVO` | `MERCADOPAGO` | `OTRO`
+- `paymentMethod`: `TRANSFERENCIA` | `EFECTIVO` | `TARJETA_DEBITO` | `TARJETA_CREDITO` | `CUENTA_CORRIENTE` | `OTRO`
 - `deliveryMethod`: `RETIRO_LOCAL` | `ENVIO_DOMICILIO`
 - `deliveryAddress`: string (optional)
+- `transferReceiptUrl`: string (optional, mandatory for `TRANSFERENCIA`)
+- `transferReceiptName`: string (optional, original filename)
 - `status`: `PENDING` | `CONFIRMED` | `PREPARING` | `READY` | `DELIVERED` | `CANCELLED`
 - `notes`: string (optional)
 - `createdAt`: Date
@@ -158,7 +165,18 @@ Configurable by Administrator in staff panel:
   - `cbu`: string (22 dígitos)
   - `alias`: string
   - `accountType`: string (e.g., Cuenta Corriente Especial)
-  - `notes`: string (Instrucciones para enviar comprobante)
+  - `notes`: string (Instrucciones para transferir)
+- `termsAndConditions`: string (Términos y Condiciones de uso del sitio)
+- `privacyPolicy`: string (Políticas de privacidad y protección de datos)
+- `footerContact`:
+  - `address`: string (Dirección física del local)
+  - `googleMapsUrl`: string (Enlace directo a Google Maps)
+  - `schedule`: string (Horarios de atención)
+  - `email`: string (Correo electrónico de contacto)
+  - `phone`: string (Teléfono o WhatsApp de atención)
+- `catalogMetadata`:
+  - `categories`: string[]
+  - `tags`: string[]
 - `updatedBy`: UUIDv7
 - `updatedAt`: Date
 
@@ -188,10 +206,14 @@ Configurable by Administrator in staff panel:
 
 ## 5. Security & Session Management
 
-1. **Tokens**:
-   - Access Token: JWT containing `sub` (userId), `role`, `type` (`staff` or `customer`), valid for **15 minutes**.
-   - Refresh Token: Stored securely (`httpOnly`, `sameSite: 'lax'`, `secure` in production cookie, and indexed in database for revocation capability), valid for **7 days**.
-   - Refresh flow: When access token expires, frontend interceptor triggers `POST /api/v1/auth/refresh` with refresh cookie, receiving a fresh access token without user friction.
+1. **Tokens & Multi-Tenant Cookie Isolation**:
+   - Access Token: JWT containing `sub` (userId), `email`, `userType` (`STAFF` or `CUSTOMER`), `role` (for staff: `ADMIN` | `EMPLOYEE`), and `isWholesaleApproved` (for customers), valid for **15 minutes**.
+   - Token Sanitization: When signing new tokens, payloads are strictly sanitized to never retain `iat` or `exp` properties from decoded tokens, preventing jsonwebtoken `options.expiresIn` exceptions.
+   - Refresh Token Isolation:
+     - Staff uses distinct cookie `staffRefreshToken` and header/cookie fallback.
+     - Customer uses distinct cookie `customerRefreshToken` and header/cookie fallback.
+     - Prevents cookie collision when developing across different ports on `localhost` (5001 vs 5002) and ensures strict audience validation (staff endpoints reject customer tokens and vice versa).
+   - Frontend Token Persistence: Frontends maintain the active access token backed by `sessionStorage` (`rd_staff_access_token` and `rd_customer_access_token`) so sessions remain immediately available on page reload without unnecessary unauthenticated roundtrips. Automatic refresh interceptor retries on both 401 and 403.
 2. **Access Control Middleware**:
    - `AuthenticateMiddleware`: Validates JWT token from Bearer header.
    - `RequireStaffMiddleware`: Ensures user is authenticated staff (`ADMIN` or `EMPLOYEE`).
@@ -207,9 +229,9 @@ Configurable by Administrator in staff panel:
 ## 6. Email Service (Resend)
 
 1. **Customer Account Activation**:
-   - Triggered upon customer registration. Contains a secure one-time activation token link pointing to `libreriard.com.ar/activar-cuenta?token=...`. Account cannot log in until verified.
+   - Triggered upon customer registration. Contains a secure one-time activation token link pointing to `libreriard.com.ar/activate-account?token=...`. Account cannot log in until verified.
 2. **Customer Password Reset**:
-   - Triggered when customer requests password recovery. Link points to `libreriard.com.ar/recuperar-clave?token=...`.
+   - Triggered when customer requests password recovery. Link points to `libreriard.com.ar/reset-password?token=...`.
 3. **Order Confirmation**:
    - Triggered when order is created. Includes order number, itemized summary, totals, delivery method, and bank transfer details (if `TRANSFERENCIA`).
 4. **Wholesale Request Notification**:
@@ -221,29 +243,35 @@ Configurable by Administrator in staff panel:
 
 - Staff can upload high-resolution product images.
 - Images are optimized, transformed, and securely uploaded to Cloudinary, storing the secure HTTPS URL and `public_id` for deletion/management.
+- When an image is removed in the product editor, it is immediately deleted from Cloudinary via `DELETE /upload/image/:publicId`.
 
 ---
 
-## 8. Frontend User Experience (Mobile-First)
+## 8. Frontend User Experience (Mobile-First & English Subroutes)
 
 ### Staff Panel (`staff.libreriard.com.ar`):
 - Responsive sidebar navigation (collapsible on mobile).
-- Dashboard: quick KPIs (orders pending, sales total, active products, wholesale requests pending).
-- Product Catalog & Editor: barcode scanner support, variant/sub-type editor, image uploader, price inputs (retail & wholesale).
-- Orders Management: quick filter tabs by status, modal with complete order details and status change trigger with automatic audit log.
-- Customers Directory: search by CUIT/CUIL, name or email; badge for Wholesale pending with 1-click approval modal.
-- Staff Management (Admin only): create staff member, assign role, reset password, deactivate/delete.
-- System Settings (Admin only): manage Bank Transfer CBU/Alias details.
-- Audit Log Inspector (Admin only): filterable by tag, entity type, actor, with visual JSON diff viewer.
+- Subroutes (in English):
+  - `/`: Panel Principal (Dashboard)
+  - `/products`: Catálogo de Productos y Editor (con escalas minoristas por cantidad y eliminación de fotos sincronizada)
+  - `/orders`: Gestión de Órdenes (con estados, tipos y métodos de pago en español)
+  - `/customers`: Gestión de Clientes (con edición, reseteo de claves y activación/desactivación)
+  - `/staff`: Gestión de Personal Staff (Admin only)
+  - `/settings`: Configuración (Admin only - Datos bancarios, Ubicación/Contacto y Textos Legales)
+  - `/audit-logs`: Auditoría y Logs del Sistema (Admin only)
 
 ### Customer Store (`libreriard.com.ar`):
-- Public Catalog: accessible without login, search bar with debounce, category and tag filters.
-- Responsive Product Cards: displaying appropriate price (retail by default; wholesale if customer logged in and approved for wholesale).
-- Product Details Modal / Page: image carousel, variant selection, stock/sub-type pricing.
-- Mobile Cart & Checkout: item counter, order summary, delivery method selector, payment method selector (with dynamic bank transfer instructions display).
-- Customer Portal:
-  - Registration with CUIL/CUIT validation.
-  - Activation confirmation feedback.
-  - Profile view with order history and status timeline.
-  - Wholesale upgrade request form with optional notes.
-  - Forgot password / reset password workflow.
+- Subroutes (in English):
+  - `/`: Catálogo público
+  - `/cart`: Carrito de compras (con cálculo automático de escalas de descuento minorista y botón "Vaciar Carrito")
+  - `/order-success`: Confirmación de orden con instrucciones y comprobante
+  - `/login`: Inicio de sesión
+  - `/register`: Registro de clientes con aceptación de términos y políticas
+  - `/activate-account`: Activación de cuenta por token
+  - `/forgot-password`: Solicitud de restablecimiento de contraseña
+  - `/reset-password`: Formulario de cambio de contraseña
+  - `/profile`: Perfil del cliente con historial de pedidos e indicador de escalas aplicadas
+  - `/terms-and-conditions`: Términos y condiciones
+  - `/privacy-policy`: Política de privacidad
+- All UI text, badges, order statuses, and messages strictly displayed in **Spanish**.
+

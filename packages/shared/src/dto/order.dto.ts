@@ -6,6 +6,8 @@ export interface OrderItemDto {
   subTypeId?: string;
   subTypeName?: string;
   unitPrice: number;
+  originalUnitPrice?: number;
+  discountApplied?: boolean;
   quantity: number;
   subtotal: number;
 }
@@ -32,6 +34,8 @@ export interface OrderDto {
   paymentMethod: PaymentMethod;
   deliveryMethod: DeliveryMethod;
   deliveryAddress?: string;
+  transferReceiptUrl?: string;
+  transferReceiptName?: string;
   status: OrderStatus;
   notes?: string;
   createdAt: string;
@@ -49,6 +53,8 @@ export interface CreateOrderDto {
   paymentMethod: PaymentMethod;
   deliveryMethod: DeliveryMethod;
   deliveryAddress?: string;
+  transferReceiptUrl?: string;
+  transferReceiptName?: string;
   notes?: string;
 }
 

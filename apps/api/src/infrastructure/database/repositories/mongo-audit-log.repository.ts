@@ -42,3 +42,4 @@ export class MongoAuditLogRepository implements IAuditLogRepository {
     await this.collection.insertOne(doc);
   }
 }
+

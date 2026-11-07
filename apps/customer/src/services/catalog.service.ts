@@ -13,7 +13,12 @@ export class CatalogService {
     return this.client.request<ProductDto>(`/products/${id}`);
   }
 
-  public async getBankDetails(): Promise<ApiResponse<SystemSettingsDto>> {
+  public async getSettings(): Promise<ApiResponse<SystemSettingsDto>> {
     return this.client.request<SystemSettingsDto>('/settings');
   }
+
+  public async getBankDetails(): Promise<ApiResponse<SystemSettingsDto>> {
+    return this.getSettings();
+  }
 }
+

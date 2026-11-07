@@ -17,6 +17,9 @@ export class AuthCustomerService {
   ) {}
 
   public async register(dto: CustomerRegisterRequestDto): Promise<CustomerUserDto> {
+    if (!dto.acceptTerms) {
+      throw new Error('Debe aceptar los Términos y Condiciones y la Política de Privacidad.');
+    }
     const email = Email.create(dto.email);
     const existing = await this.customerRepo.findByEmail(email);
     if (existing) throw new Error('Ya existe una cuenta registrada con este correo electrónico.');
@@ -32,7 +35,6 @@ export class AuthCustomerService {
     if (customer.verificationToken) {
       await this.emailService.sendActivationEmail(customer.email.toValue(), customer.name, customer.verificationToken);
     }
-
     return CustomerUserMapper.toDto(customer);
   }
 
@@ -50,6 +52,10 @@ export class AuthCustomerService {
 
     const isMatch = await this.passwordHasher.compare(pass, customer.passwordHash);
     if (!isMatch) throw new Error('Credenciales inválidas.');
+
+    if (!customer.isActive) {
+      throw new Error('Tu cuenta se encuentra desactivada. Por favor contacta con administración.');
+    }
 
     if (!customer.isEmailVerified) {
       throw new Error('Tu cuenta aún no ha sido activada. Por favor revisa tu correo y haz clic en el enlace de activación.');
@@ -72,10 +78,10 @@ export class AuthCustomerService {
   public async requestPasswordReset(emailStr: string): Promise<void> {
     const email = Email.create(emailStr);
     const customer = await this.customerRepo.findByEmail(email);
-    if (!customer) return; // Silent return for security
+    if (!customer) return;
 
     const resetToken = crypto.randomBytes(32).toString('hex');
-    const resetExpires = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+    const resetExpires = new Date(Date.now() + 60 * 60 * 1000);
     customer.setResetToken(resetToken, resetExpires);
     await this.customerRepo.save(customer);
     await this.emailService.sendPasswordResetEmail(customer.email.toValue(), customer.name, resetToken);

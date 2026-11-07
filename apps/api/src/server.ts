@@ -1,6 +1,7 @@
 import { App } from './app';
 import { MongoClient } from './infrastructure/database/mongo-client';
 import { DatabaseSeeder } from './infrastructure/database/database-seeder';
+import { CatalogSeeder } from './infrastructure/database/catalog-seeder';
 import { EnvConfig } from './infrastructure/config/env.config';
 
 async function bootstrap() {
@@ -10,11 +11,12 @@ async function bootstrap() {
     console.log('✅ Conexión a MongoDB establecida exitosamente.');
 
     await DatabaseSeeder.seedInitialAdmin();
+    await CatalogSeeder.seedCatalog();
 
     const application = new App();
     application.app.listen(EnvConfig.PORT, () => {
       console.log(`🚀 Servidor API de Librería Rubén Darío ejecutándose en: http://localhost:${EnvConfig.PORT}`);
-      console.log(`📡 URL API Base: http://localhost:${EnvConfig.PORT}/api/v1`);
+      console.log(`📡 URL API Base: http://localhost:${EnvConfig.PORT}/v1`);
     });
   } catch (error) {
     console.error('❌ Error fatal al iniciar el servidor:', error);

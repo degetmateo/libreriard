@@ -10,6 +10,7 @@ export interface CustomerRegisterRequestDto {
   cuitCuil: string;
   email: string;
   password: string;
+  acceptTerms: boolean;
   phone?: string;
   address?: string;
   postalCode?: string;

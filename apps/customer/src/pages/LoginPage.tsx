@@ -59,7 +59,7 @@ export const LoginPage: React.FC = () => {
           <div>
             <div className="flex justify-between items-center mb-1">
               <label className="text-xs font-bold text-slate-700">Contraseña</label>
-              <Link to="/olvide-clave" className="text-xs text-cyan-600 hover:underline">¿Olvidaste tu clave?</Link>
+              <Link to="/forgot-password" className="text-xs text-cyan-600 hover:underline">¿Olvidaste tu clave?</Link>
             </div>
             <input
               type="password"
@@ -84,10 +84,11 @@ export const LoginPage: React.FC = () => {
         <div className="text-center pt-2 border-t border-slate-100">
           <p className="text-xs text-slate-500">
             ¿Aún no tienes una cuenta?{' '}
-            <Link to="/registro" className="text-cyan-600 font-bold hover:underline">Regístrate aquí</Link>
+            <Link to="/register" className="text-cyan-600 font-bold hover:underline">Regístrate aquí</Link>
           </p>
         </div>
       </div>
     </div>
   );
 };
+

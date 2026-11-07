@@ -40,3 +40,4 @@ export const Header: React.FC<HeaderProps> = ({ onToggleSidebar, title }) => {
     </header>
   );
 };
+

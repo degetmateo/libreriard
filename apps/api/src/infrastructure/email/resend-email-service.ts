@@ -13,7 +13,7 @@ export class ResendEmailService implements IEmailService {
   }
 
   public async sendActivationEmail(email: string, name: string, token: string): Promise<void> {
-    const activationUrl = `${EnvConfig.CLIENT_URL}/activar-cuenta?token=${token}`;
+    const activationUrl = `${EnvConfig.CLIENT_URL}/activate-account?token=${token}`;
     const html = `<h2>¡Bienvenido a Librería Rubén Darío, ${name}!</h2>
       <p>Por favor confirma tu dirección de correo electrónico haciendo clic en el siguiente enlace:</p>
       <p><a href="${activationUrl}" style="padding:10px 20px;background:#00D9FF;color:#000;text-decoration:none;border-radius:6px;font-weight:bold;">Activar mi cuenta</a></p>
@@ -23,7 +23,7 @@ export class ResendEmailService implements IEmailService {
   }
 
   public async sendPasswordResetEmail(email: string, name: string, token: string): Promise<void> {
-    const resetUrl = `${EnvConfig.CLIENT_URL}/recuperar-clave?token=${token}`;
+    const resetUrl = `${EnvConfig.CLIENT_URL}/reset-password?token=${token}`;
     const html = `<h2>Hola ${name},</h2>
       <p>Has solicitado restablecer tu contraseña en Librería Rubén Darío.</p>
       <p><a href="${resetUrl}" style="padding:10px 20px;background:#00D9FF;color:#000;text-decoration:none;border-radius:6px;font-weight:bold;">Restablecer contraseña</a></p>
@@ -73,3 +73,4 @@ export class ResendEmailService implements IEmailService {
     }
   }
 }
+

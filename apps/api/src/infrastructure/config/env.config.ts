@@ -32,3 +32,4 @@ export class EnvConfig {
   public static readonly INITIAL_ADMIN_EMAIL = process.env.INITIAL_ADMIN_EMAIL || 'admin@libreriard.com.ar';
   public static readonly INITIAL_ADMIN_PASSWORD = process.env.INITIAL_ADMIN_PASSWORD || 'RubenDarioAdmin2026!';
 }
+

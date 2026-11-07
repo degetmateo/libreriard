@@ -18,3 +18,4 @@ export interface IProductRepository {
   save(product: Product): Promise<void>;
   delete(id: UUIDv7): Promise<void>;
 }
+

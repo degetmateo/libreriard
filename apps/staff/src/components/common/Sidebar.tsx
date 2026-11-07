@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Package, ShoppingCart, Users, UserCheck, Landmark, ShieldAlert, LogOut } from 'lucide-react';
+import { LayoutDashboard, Package, ShoppingCart, Users, UserCheck, Sliders, ShieldAlert, LogOut } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 interface SidebarProps {
@@ -13,13 +13,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
   const links = [
     { to: '/', label: 'Panel Principal', icon: LayoutDashboard },
-    { to: '/productos', label: 'Productos', icon: Package },
-    { to: '/ordenes', label: 'Órdenes', icon: ShoppingCart },
-    { to: '/clientes', label: 'Clientes', icon: Users },
+    { to: '/products', label: 'Productos', icon: Package },
+    { to: '/orders', label: 'Órdenes', icon: ShoppingCart },
+    { to: '/customers', label: 'Clientes', icon: Users },
     ...(isAdmin ? [
-      { to: '/personal', label: 'Gestión de Staff', icon: UserCheck },
-      { to: '/ajustes-banco', label: 'Datos Bancarios', icon: Landmark },
-      { to: '/logs', label: 'Logs de Auditoría', icon: ShieldAlert }
+      { to: '/staff', label: 'Gestión de Staff', icon: UserCheck },
+      { to: '/settings', label: 'Configuración', icon: Sliders },
+      { to: '/audit-logs', label: 'Logs de Auditoría', icon: ShieldAlert }
     ] : [])
   ];
 
@@ -46,10 +46,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                   to={link.to}
                   onClick={onClose}
                   className={({ isActive }) =>
-                    `flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                      isActive
-                        ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/30'
-                        : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
+                    `flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${isActive
+                      ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/30'
+                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
                     }`
                   }
                 >

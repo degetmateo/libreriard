@@ -9,6 +9,7 @@ export interface CreateCustomerParams {
   cuitCuil: string;
   email: string;
   passwordHash: string;
+  acceptTerms?: boolean;
   phone?: string;
   address?: string;
   postalCode?: string;
@@ -17,7 +18,7 @@ export interface CreateCustomerParams {
 export class CustomerUserFactory {
   public static create(p: CreateCustomerParams): CustomerUser {
     const verificationToken = crypto.randomBytes(32).toString('hex');
-    const verificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+    const verificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
     return new CustomerUser({
       id: UUIDv7.generate(),
@@ -31,6 +32,7 @@ export class CustomerUserFactory {
       isWholesaleApproved: false,
       wholesaleStatus: CustomerWholesaleStatus.NONE,
       isEmailVerified: false,
+      isActive: true,
       verificationToken,
       verificationExpires,
       createdAt: new Date(),

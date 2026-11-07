@@ -5,6 +5,15 @@ import { OrderDetailModal } from '../components/orders/OrderDetailModal';
 import { Badge } from '../components/common/Badge';
 import { Eye, Search } from 'lucide-react';
 
+export const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
+  [OrderStatus.PENDING]: 'Pendiente',
+  [OrderStatus.PREPARING]: 'En Preparación',
+  [OrderStatus.READY]: 'Lista',
+  [OrderStatus.CONFIRMED]: 'Confirmada',
+  [OrderStatus.DELIVERED]: 'Entregada',
+  [OrderStatus.CANCELLED]: 'Cancelada'
+};
+
 export const OrdersPage: React.FC = () => {
   const [orders, setOrders] = useState<OrderDto[]>([]);
   const [filterStatus, setFilterStatus] = useState<string>('');
@@ -48,7 +57,9 @@ export const OrdersPage: React.FC = () => {
         <div className="flex items-center space-x-2 overflow-x-auto pb-1 sm:pb-0">
           <button onClick={() => setFilterStatus('')} className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${!filterStatus ? 'bg-cyan-400 text-slate-950' : 'bg-slate-800 text-slate-300'}`}>Todas</button>
           {Object.values(OrderStatus).map(st => (
-            <button key={st} onClick={() => setFilterStatus(st)} className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap ${filterStatus === st ? 'bg-cyan-400 text-slate-950' : 'bg-slate-800 text-slate-300'}`}>{st}</button>
+            <button key={st} onClick={() => setFilterStatus(st)} className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap ${filterStatus === st ? 'bg-cyan-400 text-slate-950' : 'bg-slate-800 text-slate-300'}`}>
+              {ORDER_STATUS_LABELS[st]}
+            </button>
           ))}
         </div>
       </div>
@@ -77,9 +88,9 @@ export const OrdersPage: React.FC = () => {
                   <p className="font-semibold text-slate-200">{o.customer.name}</p>
                   <p className="text-xs text-slate-500">{o.customer.email}</p>
                 </td>
-                <td className="p-3"><Badge label={o.orderType} variant={o.orderType === 'WHOLESALE' ? 'cyan' : 'slate'} /></td>
+                <td className="p-3"><Badge label={o.orderType === 'WHOLESALE' ? 'MAYORISTA' : 'MINORISTA'} variant={o.orderType === 'WHOLESALE' ? 'cyan' : 'slate'} /></td>
                 <td className="p-3 font-bold text-white">${o.total.toLocaleString('es-AR')}</td>
-                <td className="p-3"><Badge label={o.status} variant={getStatusVariant(o.status)} /></td>
+                <td className="p-3"><Badge label={ORDER_STATUS_LABELS[o.status] || o.status} variant={getStatusVariant(o.status)} /></td>
                 <td className="p-3 text-right">
                   <button onClick={() => setSelectedOrder(o)} className="text-slate-400 hover:text-cyan-400 p-1"><Eye size={18} /></button>
                 </td>

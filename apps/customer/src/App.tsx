@@ -10,20 +10,24 @@ import { ActivateAccountPage } from './pages/ActivateAccountPage';
 import { ForgotPasswordPage } from './pages/ForgotPasswordPage';
 import { ResetPasswordPage } from './pages/ResetPasswordPage';
 import { ProfilePage } from './pages/ProfilePage';
+import { TermsPage } from './pages/TermsPage';
+import { PrivacyPage } from './pages/PrivacyPage';
 
 export const App: React.FC = () => {
   return (
     <Routes>
       <Route path="/" element={<Layout />}>
         <Route index element={<HomePage />} />
-        <Route path="carrito" element={<CartPage />} />
-        <Route path="orden-confirmada" element={<OrderSuccessPage />} />
+        <Route path="cart" element={<CartPage />} />
+        <Route path="order-success" element={<OrderSuccessPage />} />
         <Route path="login" element={<LoginPage />} />
-        <Route path="registro" element={<RegisterPage />} />
-        <Route path="activar-cuenta" element={<ActivateAccountPage />} />
-        <Route path="olvide-clave" element={<ForgotPasswordPage />} />
-        <Route path="recuperar-clave" element={<ResetPasswordPage />} />
-        <Route path="perfil" element={<ProfilePage />} />
+        <Route path="register" element={<RegisterPage />} />
+        <Route path="activate-account" element={<ActivateAccountPage />} />
+        <Route path="forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="reset-password" element={<ResetPasswordPage />} />
+        <Route path="profile" element={<ProfilePage />} />
+        <Route path="terms-and-conditions" element={<TermsPage />} />
+        <Route path="privacy-policy" element={<PrivacyPage />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

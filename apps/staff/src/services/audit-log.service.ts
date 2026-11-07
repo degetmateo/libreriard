@@ -9,3 +9,4 @@ export class AuditLogService {
     return this.client.request<AuditLogDto[]>(`/audit-logs${query}`);
   }
 }
+

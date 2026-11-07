@@ -37,7 +37,7 @@ export const OrderSuccessPage: React.FC = () => {
 
         <div className="pt-4 flex flex-col sm:flex-row gap-3 justify-center">
           <Link
-            to="/perfil"
+            to="/profile"
             className="px-6 py-2.5 bg-slate-900 text-cyan-400 font-bold rounded-xl text-xs hover:bg-slate-800 transition"
           >
             Ver mis Pedidos
@@ -54,3 +54,4 @@ export const OrderSuccessPage: React.FC = () => {
     </div>
   );
 };
+

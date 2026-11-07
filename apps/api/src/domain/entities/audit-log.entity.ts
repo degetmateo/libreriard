@@ -38,3 +38,4 @@ export class AuditLog {
   public get tags(): AuditLogTag[] { return this._tags; }
   public get timestamp(): Date { return this._timestamp; }
 }
+

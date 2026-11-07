@@ -4,3 +4,4 @@ export interface ISystemSettingsRepository {
   getSettings(): Promise<SystemSettings>;
   save(settings: SystemSettings): Promise<void>;
 }
+

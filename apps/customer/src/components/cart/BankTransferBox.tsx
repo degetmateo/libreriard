@@ -43,3 +43,4 @@ export const BankTransferBox: React.FC = () => {
     </div>
   );
 };
+

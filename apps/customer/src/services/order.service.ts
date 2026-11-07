@@ -14,4 +14,13 @@ export class OrderService {
   public async getMyOrders(): Promise<ApiResponse<OrderDto[]>> {
     return this.client.request<OrderDto[]>('/orders');
   }
+
+  public async uploadReceipt(file: File): Promise<ApiResponse<{ url: string; publicId: string }>> {
+    const formData = new FormData();
+    formData.append('receipt', file);
+    return this.client.request<{ url: string; publicId: string }>('/upload/receipt', {
+      method: 'POST',
+      body: formData
+    });
+  }
 }

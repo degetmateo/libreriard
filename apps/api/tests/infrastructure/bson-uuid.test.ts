@@ -21,3 +21,4 @@ describe('BsonUuidHelper', () => {
     expect(restored.equals(original)).toBe(true);
   });
 });
+

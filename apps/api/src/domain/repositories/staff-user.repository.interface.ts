@@ -10,3 +10,4 @@ export interface IStaffUserRepository {
   save(user: StaffUser): Promise<void>;
   delete(id: UUIDv7): Promise<void>;
 }
+

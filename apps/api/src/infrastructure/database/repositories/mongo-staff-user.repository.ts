@@ -43,3 +43,4 @@ export class MongoStaffUserRepository implements IStaffUserRepository {
     await this.collection.deleteOne({ _id: BsonUuidHelper.toBsonUuid(id) });
   }
 }
+

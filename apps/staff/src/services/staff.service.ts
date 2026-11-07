@@ -33,3 +33,4 @@ export class StaffService {
     return this.client.request<void>(`/staff/${id}`, { method: 'DELETE' });
   }
 }
+

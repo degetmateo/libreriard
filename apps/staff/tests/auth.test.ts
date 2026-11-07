@@ -29,3 +29,4 @@ describe('Staff Auth Logic', () => {
     expect(employeeUser.role === StaffRole.ADMIN).toBe(false);
   });
 });
+

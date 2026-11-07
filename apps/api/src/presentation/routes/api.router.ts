@@ -63,13 +63,13 @@ export class ApiRouter {
     const authCustomerService = new AuthCustomerService(customerRepo, passwordHasher, tokenProvider, emailService);
     const tokenService = new TokenService(tokenProvider, staffRepo, customerRepo);
     const staffService = new StaffManagementService(staffRepo, passwordHasher);
-    const customerService = new CustomerManagementService(customerRepo, emailService);
+    const customerService = new CustomerManagementService(customerRepo, emailService, passwordHasher);
     const productService = new ProductService(productRepo);
     const orderService = new OrderService(orderRepo, productRepo, customerRepo, settingsRepo, emailService);
     const settingsService = new SystemSettingsService(settingsRepo);
 
     // Controllers
-    const staffAuthController = new StaffAuthController(authStaffService, tokenService, auditLogService);
+    const staffAuthController = new StaffAuthController(authStaffService, tokenService, auditLogService, staffRepo);
     const customerAuthController = new CustomerAuthController(authCustomerService, tokenService, auditLogService);
     const staffController = new StaffController(staffService, auditLogService);
     const customerController = new CustomerController(customerService, auditLogService);
@@ -93,3 +93,4 @@ export class ApiRouter {
     return router;
   }
 }
+

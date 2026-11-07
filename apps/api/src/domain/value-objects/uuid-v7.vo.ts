@@ -39,3 +39,4 @@ export class UUIDv7 {
     return this.value === other.toValue();
   }
 }
+

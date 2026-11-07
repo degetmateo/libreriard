@@ -27,6 +27,12 @@ export class ProductService {
     });
   }
 
+  public async toggleActive(id: string): Promise<ApiResponse<ProductDto>> {
+    return this.client.request<ProductDto>(`/products/${id}/toggle-active`, {
+      method: 'PATCH'
+    });
+  }
+
   public async deleteProduct(id: string): Promise<ApiResponse<void>> {
     return this.client.request<void>(`/products/${id}`, { method: 'DELETE' });
   }
@@ -37,6 +43,12 @@ export class ProductService {
     return this.client.request<{ url: string; publicId: string }>('/upload/image', {
       method: 'POST',
       body: formData
+    });
+  }
+
+  public async deleteImage(publicId: string): Promise<ApiResponse<void>> {
+    return this.client.request<void>(`/upload/image/${encodeURIComponent(publicId)}`, {
+      method: 'DELETE'
     });
   }
 }

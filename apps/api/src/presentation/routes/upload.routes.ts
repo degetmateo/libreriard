@@ -9,7 +9,7 @@ export class UploadRoutes {
     const router = Router();
     const upload = multer({
       storage: multer.memoryStorage(),
-      limits: { fileSize: 10 * 1024 * 1024 } // 10MB max
+      limits: { fileSize: 15 * 1024 * 1024 } // 15MB max
     });
 
     router.post(
@@ -19,6 +19,28 @@ export class UploadRoutes {
       upload.single('image'),
       controller.upload
     );
+
+    router.post(
+      '/receipt',
+      authMiddleware.authenticate,
+      upload.single('receipt'),
+      controller.upload
+    );
+
+    router.delete(
+      '/image/:publicId',
+      authMiddleware.authenticate,
+      RoleMiddleware.requireStaff,
+      controller.deleteImage
+    );
+
+    router.delete(
+      '/image',
+      authMiddleware.authenticate,
+      RoleMiddleware.requireStaff,
+      controller.deleteImage
+    );
+
     return router;
   }
 }

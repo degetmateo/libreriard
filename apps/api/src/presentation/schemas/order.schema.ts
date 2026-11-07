@@ -12,6 +12,8 @@ export const createOrderSchema = z.object({
   paymentMethod: z.nativeEnum(PaymentMethod),
   deliveryMethod: z.nativeEnum(DeliveryMethod),
   deliveryAddress: z.string().optional(),
+  transferReceiptUrl: z.string().optional(),
+  transferReceiptName: z.string().optional(),
   notes: z.string().optional()
 });
 

@@ -11,3 +11,22 @@ export const updateBankDetailsSchema = z.object({
     notes: z.string().default('')
   })
 });
+
+export const updateLegalTextsSchema = z.object({
+  termsAndConditions: z.string().min(1, 'Los términos y condiciones no pueden estar vacíos.'),
+  privacyPolicy: z.string().min(1, 'La política de privacidad no puede estar vacía.')
+});
+
+export const updateFooterContactSchema = z.object({
+  footerContact: z.object({
+    address: z.string().min(1, 'La dirección es obligatoria.'),
+    googleMapsUrl: z.string().url('El enlace de Google Maps debe ser una URL válida.'),
+    schedule: z.string().min(1, 'Los horarios son obligatorios.'),
+    email: z.string().email('El correo de contacto no es válido.'),
+    phone: z.string().min(1, 'El teléfono de contacto es obligatorio.')
+  })
+});
+
+export const catalogItemSchema = z.object({
+  item: z.string().min(1, 'El valor no puede estar vacío.')
+});

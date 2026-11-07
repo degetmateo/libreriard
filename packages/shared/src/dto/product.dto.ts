@@ -4,6 +4,11 @@ export interface ProductImageDto {
   isPrimary: boolean;
 }
 
+export interface RetailPriceTier {
+  minQuantity: number;
+  unitPrice: number;
+}
+
 export interface ProductVariantDto {
   id: string;
   name: string;
@@ -15,13 +20,14 @@ export interface ProductVariantDto {
 export interface ProductDto {
   id: string;
   name: string;
-  description: string;
-  barcode: string;
-  retailPrice: number;
-  wholesalePrice: number;
+  description?: string;
+  barcode?: string;
+  retailPrice?: number | null;
+  wholesalePrice?: number | null;
+  retailPriceTiers?: RetailPriceTier[];
   images: ProductImageDto[];
   subTypes: ProductVariantDto[];
-  supplier: string;
+  supplier?: string;
   categories: string[];
   tags: string[];
   isActive: boolean;
@@ -31,16 +37,17 @@ export interface ProductDto {
 
 export interface CreateProductDto {
   name: string;
-  description: string;
-  barcode: string;
-  retailPrice: number;
-  wholesalePrice: number;
+  description?: string;
+  barcode?: string;
+  retailPrice?: number | null;
+  wholesalePrice?: number | null;
+  retailPriceTiers?: RetailPriceTier[];
   images?: ProductImageDto[];
   subTypes?: ProductVariantDto[];
-  supplier: string;
-  categories: string[];
-  tags: string[];
+  supplier?: string;
+  categories?: string[];
+  tags?: string[];
   isActive?: boolean;
 }
 
-export interface UpdateProductDto extends Partial<CreateProductDto> {}
+export interface UpdateProductDto extends Partial<CreateProductDto> { }

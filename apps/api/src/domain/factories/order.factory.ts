@@ -12,6 +12,8 @@ export interface CreateOrderParams {
   paymentMethod: PaymentMethod;
   deliveryMethod: DeliveryMethod;
   deliveryAddress?: string;
+  transferReceiptUrl?: string;
+  transferReceiptName?: string;
   notes?: string;
 }
 
@@ -35,6 +37,8 @@ export class OrderFactory {
       paymentMethod: p.paymentMethod,
       deliveryMethod: p.deliveryMethod,
       deliveryAddress: p.deliveryAddress,
+      transferReceiptUrl: p.transferReceiptUrl,
+      transferReceiptName: p.transferReceiptName,
       status: OrderStatus.PENDING,
       notes: p.notes,
       createdAt: new Date(),

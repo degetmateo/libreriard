@@ -19,6 +19,7 @@ export class CustomerUserMapper {
       wholesaleStatus: doc.wholesaleStatus as CustomerWholesaleStatus,
       wholesaleMessage: doc.wholesaleMessage,
       isEmailVerified: doc.isEmailVerified,
+      isActive: doc.isActive !== undefined ? doc.isActive : true,
       verificationToken: doc.verificationToken,
       verificationExpires: doc.verificationExpires,
       resetToken: doc.resetToken,
@@ -42,6 +43,7 @@ export class CustomerUserMapper {
       wholesaleStatus: entity.wholesaleStatus,
       wholesaleMessage: entity.wholesaleMessage,
       isEmailVerified: entity.isEmailVerified,
+      isActive: entity.isActive,
       verificationToken: entity.verificationToken,
       verificationExpires: entity.verificationExpires,
       resetToken: entity.resetToken,
@@ -65,6 +67,7 @@ export class CustomerUserMapper {
       wholesaleStatus: entity.wholesaleStatus,
       wholesaleMessage: entity.wholesaleMessage,
       isEmailVerified: entity.isEmailVerified,
+      isActive: entity.isActive,
       createdAt: entity.createdAt.toISOString(),
       updatedAt: entity.updatedAt.toISOString()
     };

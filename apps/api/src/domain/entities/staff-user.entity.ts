@@ -59,3 +59,4 @@ export class StaffUser {
     this._updatedAt = new Date();
   }
 }
+

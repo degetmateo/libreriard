@@ -27,7 +27,7 @@ export const Navbar: React.FC = () => {
               <ShieldCheck size={14} /> <span>Cliente Mayorista</span>
             </span>
           )}
-          <Link to="/carrito" className="relative p-2 text-slate-300 hover:text-cyan-400 transition">
+          <Link to="/cart" className="relative p-2 text-slate-300 hover:text-cyan-400 transition">
             <ShoppingCart size={22} />
             {itemCount > 0 && (
               <span className="absolute -top-1 -right-1 bg-cyan-400 text-slate-950 text-xs font-extrabold rounded-full w-5 h-5 flex items-center justify-center">
@@ -37,7 +37,7 @@ export const Navbar: React.FC = () => {
           </Link>
           {user ? (
             <div className="flex items-center space-x-3">
-              <Link to="/perfil" className="text-sm font-medium text-slate-200 hover:text-cyan-400 flex items-center space-x-1">
+              <Link to="/profile" className="text-sm font-medium text-slate-200 hover:text-cyan-400 flex items-center space-x-1">
                 <User size={16} /> <span>{user.name}</span>
               </Link>
               <button onClick={logout} className="text-xs text-rose-400 hover:underline">Salir</button>
@@ -50,7 +50,7 @@ export const Navbar: React.FC = () => {
         </div>
 
         <div className="flex md:hidden items-center space-x-3">
-          <Link to="/carrito" className="relative p-2 text-slate-300">
+          <Link to="/cart" className="relative p-2 text-slate-300">
             <ShoppingCart size={22} />
             {itemCount > 0 && (
               <span className="absolute -top-1 -right-1 bg-cyan-400 text-slate-950 text-xs font-extrabold rounded-full w-5 h-5 flex items-center justify-center">
@@ -69,7 +69,7 @@ export const Navbar: React.FC = () => {
           <Link to="/" onClick={() => setMobileMenuOpen(false)} className="block text-sm font-medium text-slate-300">Catálogo</Link>
           {user ? (
             <>
-              <Link to="/perfil" onClick={() => setMobileMenuOpen(false)} className="block text-sm font-medium text-cyan-400">Mi Perfil ({user.name})</Link>
+              <Link to="/profile" onClick={() => setMobileMenuOpen(false)} className="block text-sm font-medium text-cyan-400">Mi Perfil ({user.name})</Link>
               <button onClick={() => { logout(); setMobileMenuOpen(false); }} className="block text-sm text-rose-400">Cerrar Sesión</button>
             </>
           ) : (
@@ -80,3 +80,4 @@ export const Navbar: React.FC = () => {
     </nav>
   );
 };
+

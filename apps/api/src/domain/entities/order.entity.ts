@@ -16,6 +16,8 @@ export interface OrderProps {
   paymentMethod: PaymentMethod;
   deliveryMethod: DeliveryMethod;
   deliveryAddress?: string;
+  transferReceiptUrl?: string;
+  transferReceiptName?: string;
   status?: OrderStatus;
   notes?: string;
   createdAt?: Date;
@@ -35,6 +37,8 @@ export class Order {
   private readonly _paymentMethod: PaymentMethod;
   private readonly _deliveryMethod: DeliveryMethod;
   private readonly _deliveryAddress?: string;
+  private readonly _transferReceiptUrl?: string;
+  private readonly _transferReceiptName?: string;
   private _status: OrderStatus;
   private _notes?: string;
   private readonly _createdAt: Date;
@@ -53,6 +57,8 @@ export class Order {
     this._paymentMethod = p.paymentMethod;
     this._deliveryMethod = p.deliveryMethod;
     this._deliveryAddress = p.deliveryAddress;
+    this._transferReceiptUrl = p.transferReceiptUrl;
+    this._transferReceiptName = p.transferReceiptName;
     this._status = p.status || OrderStatus.PENDING;
     this._notes = p.notes;
     this._createdAt = p.createdAt || new Date();
@@ -71,6 +77,8 @@ export class Order {
   public get paymentMethod(): PaymentMethod { return this._paymentMethod; }
   public get deliveryMethod(): DeliveryMethod { return this._deliveryMethod; }
   public get deliveryAddress(): string | undefined { return this._deliveryAddress; }
+  public get transferReceiptUrl(): string | undefined { return this._transferReceiptUrl; }
+  public get transferReceiptName(): string | undefined { return this._transferReceiptName; }
   public get status(): OrderStatus { return this._status; }
   public get notes(): string | undefined { return this._notes; }
   public get createdAt(): Date { return this._createdAt; }

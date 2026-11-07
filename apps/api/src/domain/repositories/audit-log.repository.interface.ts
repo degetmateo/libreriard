@@ -5,3 +5,4 @@ export interface IAuditLogRepository {
   findMany(params: AuditLogQueryDto): Promise<{ items: AuditLog[]; total: number }>;
   save(log: AuditLog): Promise<void>;
 }
+

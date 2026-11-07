@@ -14,7 +14,7 @@ export class ProductController {
     try {
       const { search, category, tag, barcode } = req.query as Record<string, string>;
       const page = req.query.page ? parseInt(req.query.page as string, 10) : 1;
-      const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 24;
+      const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 48;
 
       const result = await this.productService.getProducts({ search, category, tag, barcode, page, limit });
       res.json({ success: true, data: result.items, total: result.total, page, limit });
@@ -23,8 +23,7 @@ export class ProductController {
 
   public getById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const id = String(req.params.id);
-      const product = await this.productService.getProductById(id);
+      const product = await this.productService.getProductById(String(req.params.id));
       res.json({ success: true, data: product });
     } catch (err) { next(err); }
   };
@@ -55,6 +54,21 @@ export class ProductController {
         [AuditLogTag.PRODUCT]
       );
       res.json({ success: true, message: 'Producto actualizado con éxito.', data: updated });
+    } catch (err) { next(err); }
+  };
+
+  public toggleActive = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const id = String(req.params.id);
+      const updated = await this.productService.toggleProductActive(id);
+      await this.auditLogService.logAction(
+        { id: req.user!.sub, name: req.user!.email, email: req.user!.email, role: req.user!.role!, ip: req.ip },
+        updated.isActive ? 'PRODUCT_ACTIVATED' : 'PRODUCT_DEACTIVATED',
+        { type: 'Product', id: updated.id },
+        { before: null, after: { isActive: updated.isActive } },
+        [AuditLogTag.PRODUCT]
+      );
+      res.json({ success: true, message: `Producto ${updated.isActive ? 'activado' : 'desactivado'}.`, data: updated });
     } catch (err) { next(err); }
   };
 

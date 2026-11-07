@@ -13,11 +13,16 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onOpenDetails
   const { isWholesale } = useAuth();
   const { addItem } = useCart();
 
-  const price = isWholesale ? product.wholesalePrice : product.retailPrice;
+  const rawPrice = isWholesale ? product.wholesalePrice : product.retailPrice;
+  const hasPrice = typeof rawPrice === 'number';
   const hasVariants = product.subTypes && product.subTypes.length > 0;
 
   const handleQuickAdd = (e: React.MouseEvent) => {
     e.stopPropagation();
+    if (!hasPrice) {
+      onOpenDetails(product);
+      return;
+    }
     if (hasVariants) {
       onOpenDetails(product);
     } else {
@@ -51,17 +56,24 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onOpenDetails
 
       <div className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between">
         <div>
-          <span className="text-base font-black text-slate-900">${price.toLocaleString('es-AR')}</span>
-          {isWholesale && (
-            <span className="block text-[10px] text-slate-400 line-through">
-              ${product.retailPrice.toLocaleString('es-AR')}
-            </span>
+          {hasPrice ? (
+            <>
+              <span className="text-base font-black text-slate-900">${rawPrice.toLocaleString('es-AR')}</span>
+              {isWholesale && typeof product.retailPrice === 'number' && (
+                <span className="block text-[10px] text-slate-400 line-through">
+                  ${product.retailPrice.toLocaleString('es-AR')}
+                </span>
+              )}
+            </>
+          ) : (
+            <span className="text-xs font-bold text-amber-600">Consultar precio</span>
           )}
         </div>
         <button
           onClick={handleQuickAdd}
-          className="p-2 rounded-xl bg-slate-900 text-cyan-400 hover:bg-cyan-400 hover:text-slate-950 transition"
-          title={hasVariants ? 'Elegir opciones' : 'Agregar al carrito'}
+          disabled={!hasPrice && !hasVariants}
+          className="p-2 rounded-xl bg-slate-900 text-cyan-400 hover:bg-cyan-400 hover:text-slate-950 transition disabled:opacity-40"
+          title={hasPrice ? (hasVariants ? 'Elegir opciones' : 'Agregar al carrito') : 'Ver detalles'}
         >
           <ShoppingCart size={16} />
         </button>
